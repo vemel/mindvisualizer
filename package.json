@@ -1,0 +1,14 @@
+{
+    "name": "mindreader",
+    "version": "0.0.1",
+    "type": "module",
+    "dependencies": {
+        "express": "^4.17.3"
+    },
+    "scripts": {
+        "start": "nodemon src/server.js"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.15"
+    }
+}
