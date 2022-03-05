@@ -60,6 +60,10 @@ const rotate = function(pt, center, angle) {
     ]
 }
 
+const choice = function(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
 
 window.vectors = {
     lerp,
@@ -68,4 +72,5 @@ window.vectors = {
     Easing,
     rotate,
     distance,
+    choice
 }

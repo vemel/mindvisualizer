@@ -1,3 +1,13 @@
+window.OPTS = {
+    maxThoughts: 2500,
+    speed: 10.0,
+    randomText: true,
+    shuffle: false,
+    demo: false
+}
+window.THOUGHTS = []
+window.COORDS = {}
+
 function fitTextOnCanvas(text, canvas) {
     let fontsize=100;
     const context = canvas.getContext('2d');
@@ -5,14 +15,42 @@ function fitTextOnCanvas(text, canvas) {
     // lower the font size until the text fits the canvas
     do{
         fontsize--;
-        context.font = `${fontsize}px Arial`;
+        context.font = `bold ${fontsize}px Calibri`;
     }while(context.measureText(text).width > canvas.width - 40)
 
     // draw the text
     context.fillText(text, canvas.width / 2, canvas.height / 2 + context.measureText(text).fontBoundingBoxAscent / 2);
 }
 
-function getText() {
+
+const DEMO_TEXT = [
+    "✌💗",
+    "🐈👈",
+    "♋?",
+    "секс",
+    "убить путина",
+    "влад - гений",
+    "всё вижу",
+    "🍆👍",
+    "🧁",
+    "💊",
+    "как это?!",
+    "ебать секс",
+    "срааааааать",
+    "¡завтра!",
+    "вкусная еда",
+    "🌴лето🌴",
+    "🪙 энергия 💳"
+]
+
+const MARCH_TEXT = [
+    ": : : :",
+    "дорогие девушки",
+
+    "!!!"
+]
+
+function getTexts() {
     const params = new Proxy(new URLSearchParams(window.location.search), {
         get: (searchParams, prop) => searchParams.get(prop),
     });
@@ -27,11 +65,14 @@ function getText() {
         const decoded = decodeURIComponent(escape(window.atob( params.bq )));
         localStorage.setItem("mindtext", decoded)
     }
-    let result = 'ХОЧУ СЕКСА'
+    let result = '?'
     if (localStorage.getItem("mindtext")) {
         result = localStorage.getItem("mindtext")
     }
-    return result.toUpperCase()
+    if (result == "demo") {
+        return DEMO_TEXT.map(x => x.toUpperCase())
+    }
+    return result.split(".").map(x => x.toUpperCase())
 }
 
 function getCoords({ text }) {
@@ -40,7 +81,7 @@ function getCoords({ text }) {
     const context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    context.font = 'bold 24px Arial';
+    context.font = 'bold 24px Calibri';
     context.textAlign = "center";
     if (text.length) {
         const spacedText = [...text.toUpperCase()].join(' ')
@@ -109,7 +150,7 @@ class Thought {
 
     getTravelSeconds() {
         const distance = vectors.distance(this.start, this.end)
-        return Math.max(distance / this.speed, 5.0)
+        return Math.max(distance / this.speed, 1.0)
     }
 
     getEnded() {
@@ -153,7 +194,7 @@ class Thought {
         const coords = Object.keys(COORDS)
         if (!coords.length) return null
 
-        const coordsStr = coords[Math.floor(Math.random()*coords.length)];
+        const coordsStr = vectors.choice(coords)
         return coordsStr.split(',').map(x => parseInt(x))
     }
 
@@ -235,13 +276,6 @@ class Thought {
 }
 
 
-window.OPTS = {
-    maxThoughts: 2500,
-    speed: 5.0
-}
-window.THOUGHTS = []
-
-let COORDS = {}
 
 function drawThoughts() {
     const canvas = document.getElementById('front');
@@ -333,11 +367,18 @@ function initFrontCanvas() {
     canvas.height = window.innerHeight * canvas.width / window.innerWidth
 }
 
-function maybeDemo() {
+function updateOpts() {
     const params = new Proxy(new URLSearchParams(window.location.search), {
         get: (searchParams, prop) => searchParams.get(prop),
     });
-    if (!params.demo) return
+    if (params.demo) OPTS.demo = params.demo === "true"
+    if (params.speed) OPTS.speed = parseFloat(params.speed)
+    if (params.random) OPTS.randomText = params.random === "true"
+    if (params.shuffle) OPTS.shuffle = params.shuffle === "true"
+}
+
+function maybeDemo() {
+    if (!OPTS.demo) return
 
     const canvas = document.getElementById('front');
     const started = new Date()
@@ -358,22 +399,30 @@ function maybeDemo() {
     }, 10)
 }
 
-const main = () => {
-    initControls()
-    initFrontCanvas()
-
-    const textLines = getText().split('.')
-    for (const text of textLines) {
-        const index = textLines.indexOf(text)
-        if (!index) {
-            COORDS = getCoords({ text })
-            continue
-        }
-        setTimeout(() => {
+const showTextLines = () => {
+    const textLines = getTexts()
+    console.log(textLines)
+    let counter = 0;
+    if (textLines.length > 1 && OPTS.shuffle) {
+        setInterval(() => {
+            console.log("trigger")
+            const text = OPTS.randomText ? vectors.choice(textLines): textLines[counter]
+            counter = (counter + 1) % textLines.length
             COORDS = getCoords({ text })
             THOUGHTS.forEach(thought => thought.disturbDelayed())
-        }, 1000 * 60 * index / OPTS.speed)
+        }, 1000 * 60 * 3/ OPTS.speed)
     }
+
+    const text = OPTS.randomText ? vectors.choice(textLines): textLines[counter]
+    counter = (counter + 1) % textLines.length
+    COORDS = getCoords({ text })
+}
+
+const main = () => {
+    updateOpts()
+    initControls()
+    initFrontCanvas()
+    showTextLines()
     initCanvas()
     // debugThoughts()
     setInterval(() => {
