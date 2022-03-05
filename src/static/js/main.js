@@ -26,7 +26,17 @@ function fitTextOnCanvas(text, canvas) {
 const DEMO_TEXT = [
     "✌💗",
     "🐈👈",
-    "♋?",
+    "♋❓",
+    "⭐‿⭐",
+    "🌹🌷🌹",
+    "👉👌💦",
+    "🎁🥰",
+    "(ᵔᴥᵔ)",
+    "ಠ_ಠ",
+    "(づ￣ ³￣)づ",
+    "¯\\_(ツ)_/¯",
+    "🌈🐟",
+    "🪄✨✨",
     "секс",
     "убить путина",
     "влад - гений",
@@ -36,11 +46,11 @@ const DEMO_TEXT = [
     "💊",
     "как это?!",
     "ебать секс",
-    "срааааааать",
+    "сраааать",
     "¡завтра!",
     "вкусная еда",
     "🌴лето🌴",
-    "🪙 энергия 💳"
+    "💎энергия💰"
 ]
 
 const MARCH_TEXT = [
@@ -133,8 +143,8 @@ class Thought {
       this.start = position
       this.context = context
       this.random = Math.random()
-      this.angle = (Math.random() - 0.5) * Math.PI
-      this.speed = (20.0 + Math.random() * 10.0) * OPTS.speed
+      this.angle = ((Math.random() > 0.5) ? 1 : -1) * (Math.random() * 0.5 + 0.25) * Math.PI
+      this.speed = (15.0 + Math.random() * 10.0) * OPTS.speed
       this.created = new Date()
       this.died = null
       
@@ -150,7 +160,7 @@ class Thought {
 
     getTravelSeconds() {
         const distance = vectors.distance(this.start, this.end)
-        return Math.max(distance / this.speed, 1.0)
+        return Math.max(distance / this.speed, 20.0 / OPTS.speed)
     }
 
     getEnded() {
@@ -170,19 +180,19 @@ class Thought {
 
     getDieLerpT() {
         const now = new Date()
-        return 1.0 - Math.min(1.0, (this.died - now) / 400);
+        return 1.0 - Math.min(1.0, (this.died - now) / 500);
     }
 
     getRadius() {
         const now = new Date()
         const bornMod = Math.min((now - this.created) / 1000, 1.0)
-        const dieMod = this.died ? vectors.lerp(1.0, 4.0, vectors.Easing.easeInQuad(this.getDieLerpT())): 1.0
+        const dieMod = this.died ? vectors.lerp(1.0, 0.2, vectors.Easing.easeInOutQuad(this.getDieLerpT())): 1.0
         const size = 6.0 + Math.sin((now - this.created) / 1000 + this.random * 6) * 2.0;
         return bornMod * dieMod * size
     }
 
     die() {
-        this.died = new Date(Date.now() + 400 + Math.random() * 1000)
+        this.died = new Date(Date.now() + 500 + Math.random() * 2000)
     }
 
     destroy() {
@@ -334,6 +344,12 @@ function initCanvas() {
     let isDrawing = false;
     canvas.addEventListener('mousedown', function(event) {
         isDrawing = true;
+        const clickPosition = getCursorPosition(canvas, event)
+        THOUGHTS.forEach(thought => {
+            if (vectors.distance(thought.position, clickPosition) < 50.0) {
+                thought.disturb()
+            }
+        })
         generateThoughts({ canvas, event, chance: 0.5, particles: 20 })
     })
     canvas.addEventListener('mouseup', function() {
@@ -410,7 +426,7 @@ const showTextLines = () => {
             counter = (counter + 1) % textLines.length
             COORDS = getCoords({ text })
             THOUGHTS.forEach(thought => thought.disturbDelayed())
-        }, 1000 * 60 * 3/ OPTS.speed)
+        }, 1000 * 60 * 1.5 / OPTS.speed)
     }
 
     const text = OPTS.randomText ? vectors.choice(textLines): textLines[counter]
