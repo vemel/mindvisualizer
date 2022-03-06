@@ -26,5 +26,5 @@ window.TEXTS = {
         "🌴лето🌴",
         "💎энергия💰"
     ],
-    emoji: Array.from(Array(500).keys()).map(() => `${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}`)
+    emoji: Array.from(Array(500).keys()).map(() => `${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}`)
 }

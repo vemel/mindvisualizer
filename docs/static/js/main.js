@@ -408,8 +408,8 @@ const showTextLines = () => {
     let counter = 0;
     if (textLines.length > 1 && OPTS.shuffle) {
         setInterval(() => {
-            console.log("trigger")
             const text = OPTS.randomText ? vectors.choice(textLines): textLines[counter]
+            console.log("Rendering", [text])
             counter = (counter + 1) % textLines.length
             COORDS = getCoords({ text })
             THOUGHTS.forEach(thought => thought.disturbDelayed())
