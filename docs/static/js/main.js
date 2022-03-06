@@ -333,9 +333,9 @@ function initCanvas() {
 }
 
 function initControls() {
-    if (OPTS.hideUI) {
-        document.getElementById('title').classList.add("hidden")
-        document.getElementById('reset').classList.add("hidden")
+    if (!OPTS.hideUI) {
+        document.getElementById('title').classList.remove("hidden")
+        document.getElementById('reset').classList.remove("hidden")
     }
     document.getElementById('reset').addEventListener('click', () => {
         THOUGHTS.forEach(thought => thought.die())
