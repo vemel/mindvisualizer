@@ -3,7 +3,8 @@ window.OPTS = {
     speed: 1.0,
     randomText: true,
     shuffle: true,
-    demo: false
+    demo: false,
+    hideUI: false,
 }
 window.THOUGHTS = []
 window.COORDS = {}
@@ -21,37 +22,6 @@ function fitTextOnCanvas(text, canvas) {
     // draw the text
     context.fillText(text, canvas.width / 2, canvas.height / 2 + context.measureText(text).fontBoundingBoxAscent / 2);
 }
-
-
-const DEMO_TEXT = [
-    "✌💗",
-    "🐈👈",
-    "♋❓",
-    "⭐‿⭐",
-    "🌹🌷🌹",
-    "👉👌💦",
-    "🎁🥰",
-    "(ᵔᴥᵔ)",
-    "ಠ_ಠ",
-    "(づ￣ ³￣)づ",
-    "¯\\_(ツ)_/¯",
-    "🌈🐟",
-    "🪄✨✨",
-    "секс",
-    "убить путина",
-    "влад - гений",
-    "всё вижу",
-    "🍆👍",
-    "🧁",
-    "💊",
-    "как это?!",
-    "ебать секс",
-    "сраааать",
-    "¡завтра!",
-    "вкусная еда",
-    "🌴лето🌴",
-    "💎энергия💰"
-]
 
 function getTexts() {
     const params = new Proxy(new URLSearchParams(window.location.search), {
@@ -72,8 +42,8 @@ function getTexts() {
     if (localStorage.getItem("mindtext")) {
         result = localStorage.getItem("mindtext")
     }
-    if (result == "demo") {
-        return DEMO_TEXT.map(x => x.toUpperCase())
+    if (Object.keys(TEXTS).includes(result)) {
+        return TEXTS[result].map(x => x.toUpperCase())
     }
     return result.split(".").map(x => x.toUpperCase())
 }
@@ -363,6 +333,10 @@ function initCanvas() {
 }
 
 function initControls() {
+    if (OPTS.hideUI) {
+        document.getElementById('title').classList.add("hidden")
+        document.getElementById('reset').classList.add("hidden")
+    }
     document.getElementById('reset').addEventListener('click', () => {
         THOUGHTS.forEach(thought => thought.die())
     })
@@ -391,6 +365,7 @@ function updateOpts() {
     if (params.speed) OPTS.speed = parseFloat(params.speed)
     if (params.random) OPTS.randomText = params.random === "true"
     if (params.shuffle) OPTS.shuffle = params.shuffle === "true"
+    if (params.ui) OPTS.hideUI = params.ui === "false"
 }
 
 function maybeDemo() {
@@ -417,7 +392,6 @@ function maybeDemo() {
 
 const showTextLines = () => {
     const textLines = getTexts()
-    console.log(textLines)
     let counter = 0;
     if (textLines.length > 1 && OPTS.shuffle) {
         setInterval(() => {
