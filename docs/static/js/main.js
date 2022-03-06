@@ -85,7 +85,7 @@ function getCoords({ text }) {
         result[`${coords[0]},${coords[1]}`] = {
             free: true,
             color: [red, green, blue],
-            isBlack: red == green && green == blue
+            isBlack: red == green && green == blue && red < 10
         }
     }
     return result

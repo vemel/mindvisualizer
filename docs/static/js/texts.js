@@ -1,6 +1,9 @@
 import * as vectors from './vectors.js'
 
-const EMOJIS = [..."⭐🌹🌷👉👌💦🎁🥰✌💗🐈🍆👍🧁💊🔥💑🎄🥒🥕🥐🎈💡🕯️🗝️🎷🎮🏅🏆⚓🚕🛖✈️"]
+const EMOJIS = [
+    ..."⭐🌹🌷👉👌💦🎁🥰✌💗🐈🍆👍🧁💊🔥🎄🥒🥕🥐🎈💡🗝️🎷🎮🏅🏆⚓🚕🛖✈️😆🥥🍒💩🤡",
+    ..."💍🐀💃🏻💅🥺🌈🐟👑✊🚑🚒🗿🔮💰❌🦽🏴‍☠️☝️🎉🥳🪅👮🤰🦄🐴🖕"
+]
 
 export default {
     demo: [
