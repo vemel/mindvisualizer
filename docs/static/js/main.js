@@ -53,13 +53,6 @@ const DEMO_TEXT = [
     "💎энергия💰"
 ]
 
-const MARCH_TEXT = [
-    ": : : :",
-    "дорогие девушки",
-
-    "!!!"
-]
-
 function getTexts() {
     const params = new Proxy(new URLSearchParams(window.location.search), {
         get: (searchParams, prop) => searchParams.get(prop),

@@ -1,15 +1,15 @@
-const lerp = function (a, b, t) {
+function lerp(a, b, t) {
     return a + t * (b - a);
 };
 
-const lerpV2 = function (p0, p1, t) {
+function lerpV2(p0, p1, t) {
     return [
         lerp(p0[0], p1[0], t),
         lerp(p0[1], p1[1], t)
     ];
 };
 
-const lerpV3 = function (p0, p1, t) {
+function lerpV3(p0, p1, t) {
     return [
         lerp(p0[0], p1[0], t),
         lerp(p0[1], p1[1], t),
@@ -17,7 +17,7 @@ const lerpV3 = function (p0, p1, t) {
     ];
 };
 
-Easing = {
+const Easing = {
     // no easing, no acceleration
     linear: t => t,
     // accelerating from zero velocity
@@ -46,11 +46,11 @@ Easing = {
     easeInOutQuint: t => t < .5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
 }
 
-const distance = function(pt1, pt2) {
+function distance(pt1, pt2) {
     return Math.pow(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2), 0.5)
 }
 
-const rotate = function(pt, center, angle) {
+function rotate(pt, center, angle) {
     const length = distance(pt, center)
     const origAngle = Math.atan2(pt[1] - center[1], pt[0] - center[0])
     const newAngle = origAngle + angle
@@ -60,7 +60,7 @@ const rotate = function(pt, center, angle) {
     ]
 }
 
-const choice = function(arr) {
+function choice(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
