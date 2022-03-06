@@ -1,6 +1,6 @@
 window.OPTS = {
     maxThoughts: 2500,
-    speed: 10.0,
+    speed: 1.0,
     randomText: true,
     shuffle: false,
     demo: false
