@@ -3,7 +3,10 @@
 Just a regular mind visualizer, you know. I dunno what to add.
 Use your mouse or fingers to visualize your thoughts.
 
-[Live Demo](https://vemel.github.io/mindvisualizer/)
+- [Hello Demo](https://vemel.github.io/mindvisualizer/?q=hello)
+- [Emoji Manual](https://vemel.github.io/mindvisualizer/?q=emoji)
+- [Emoji Auto](https://vemel.github.io/mindvisualizer/?q=emoji&demo=true&ui=false)
+- [Phrases Auto](https://vemel.github.io/mindvisualizer/?q=demo&demo=true&ui=false)
 
 ## Usage
 
