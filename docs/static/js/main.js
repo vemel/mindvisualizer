@@ -352,7 +352,14 @@ function initCanvas() {
     canvas.addEventListener('mousemove', function(event) {
         if (!isDrawing) return;
         generateThoughts({ canvas, event, chance: 0.03 })
-    })    
+    })
+
+    canvas.addEventListener("touchmove", (event) => {
+        console.log('touchmove',event)
+        for (const touchEvent of event.changedTouches) {
+            generateThoughts({ canvas, event: touchEvent, chance: 0.03 })
+        }
+    }, false);
 }
 
 function initControls() {
