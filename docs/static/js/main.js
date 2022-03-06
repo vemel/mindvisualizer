@@ -201,7 +201,7 @@ class Thought {
     }
 
     disturbDelayed() {
-        this.rearranged = new Date(Date.now() + 1000 * 10 * Math.random())
+        this.rearranged = new Date(Date.now() + 1000 * 30 * Math.random() / OPTS.speed)
     }
 
     getElapsedSeconds() {
@@ -313,7 +313,7 @@ function initCanvas() {
                 thought.disturb()
             }
         })
-        generateThoughts({ canvas, event, chance: 0.5, particles: 20 })
+        generateThoughts({ canvas, event, chance: 0.5, particles: 10 * OPTS.speed })
     })
     canvas.addEventListener('mouseup', function() {
         isDrawing = false;
@@ -321,13 +321,23 @@ function initCanvas() {
 
     canvas.addEventListener('mousemove', function(event) {
         if (!isDrawing) return;
-        generateThoughts({ canvas, event, chance: 0.03 })
+        generateThoughts({ canvas, event, chance: 0.03, particles: 10 * OPTS.speed })
+    })
+
+    canvas.addEventListener('touchstart', function(event) {
+        const clickPosition = getCursorPosition(canvas, event)
+        THOUGHTS.forEach(thought => {
+            if (vectors.distance(thought.position, clickPosition) < 50.0) {
+                thought.disturb()
+            }
+        })
+        generateThoughts({ canvas, event, chance: 0.5, particles: 10 * OPTS.speed })
     })
 
     canvas.addEventListener("touchmove", (event) => {
         console.log('touchmove',event)
         for (const touchEvent of event.changedTouches) {
-            generateThoughts({ canvas, event: touchEvent, chance: 0.03 })
+            generateThoughts({ canvas, event: touchEvent, chance: 0.03, particles: 10 * OPTS.speed })
         }
     }, false);
 }
