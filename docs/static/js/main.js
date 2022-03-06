@@ -1,6 +1,6 @@
 window.OPTS = {
     maxThoughts: 2500,
-    speed: 1.0,
+    speed: 2.0,
     randomText: true,
     shuffle: true,
     demo: false,
@@ -38,9 +38,12 @@ function getTexts() {
         const decoded = decodeURIComponent(escape(window.atob( params.bq )));
         localStorage.setItem("mindtext", decoded)
     }
-    let result = '?'
+    let result = ""
     if (localStorage.getItem("mindtext")) {
         result = localStorage.getItem("mindtext")
+    }
+    if (!result.length) {
+        return TEXTS.emoji
     }
     if (Object.keys(TEXTS).includes(result)) {
         return TEXTS[result].map(x => x.toUpperCase())
