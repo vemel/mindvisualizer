@@ -398,7 +398,7 @@ function maybeDemo() {
                 clientY: emitter[1],
             },
             chance: 0.2,
-            particles: 10
+            particles: 10 * OPTS.speed
         })
     }, 10)
 }
