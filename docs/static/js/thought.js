@@ -44,7 +44,7 @@ export default class Thought {
     }
 
     getNewRearranged() {
-        return new Date(this.ended.getTime() + Math.floor((Math.random() * 120) * 1000))
+        return new Date(this.ended.getTime() + Math.floor((Math.random() * 100) * 1000))
     }
 
     getDieLerpT() {

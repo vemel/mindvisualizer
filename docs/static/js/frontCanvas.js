@@ -146,7 +146,7 @@ export default class FrontCanvas {
                 clientX: emitter[0],
                 clientY: emitter[1],
             },
-            chance: TIME_DELTA * this.speed,
+            chance: TIME_DELTA * this.speed * 10,
             particles: 10
         })
     }

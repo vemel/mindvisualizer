@@ -1,7 +1,8 @@
-import * as vectors from './vectors.js'
 import TEXTS from './texts.js'
 import BackCanvas from './backCanvas.js'
 import FrontCanvas from './frontCanvas.js'
+import Renderer from './renderer.js'
+import UI from './ui.js'
 
 
 window.OPTS = {
@@ -42,39 +43,6 @@ function getTexts() {
     return result.split(".").map(x => x.toUpperCase())
 }
 
-function updateEffects(frontCanvas) {
-    const title = document.getElementById('title')
-    if (frontCanvas.thoughts.length >= 1000 && !title.classList.contains("glitch")) {
-        title.classList.add("glitch")
-        title.classList.add("layers")
-    }
-    if (frontCanvas.thoughts.length < 1000 && title.classList.contains("glitch")) {
-        title.classList.remove("glitch")
-        title.classList.remove("layers")
-    }
-}
-
-function initCanvas() {
-    const frontCanvas = new FrontCanvas({
-        speed: OPTS.speed,
-        demo: OPTS.demo
-    })
-    window.frontCanvas = frontCanvas
-    frontCanvas.init()
-    frontCanvas.registerEventListeners()
-    return frontCanvas
-}
-
-function initControls() {
-    if (!OPTS.hideUI) {
-        document.getElementById('title').classList.remove("hidden")
-        document.getElementById('controls').classList.remove("hidden")
-    }
-    document.getElementById('reset').addEventListener('click', () => {
-        THOUGHTS.forEach(thought => thought.die())
-    })
-}
-
 function updateOpts() {
     const params = new Proxy(new URLSearchParams(window.location.search), {
         get: (searchParams, prop) => searchParams.get(prop),
@@ -86,51 +54,43 @@ function updateOpts() {
     if (params.ui) OPTS.hideUI = params.ui === "false"
 }
 
-const showTextLines = (frontCanvas) => {
-    const backCanvas = new BackCanvas()
-
-    const textLines = getTexts()
-    let counter = 0;
-    if (textLines.length > 1 && OPTS.shuffle) {
-        setInterval(() => {
-            const text = OPTS.randomText ? vectors.choice(textLines) : textLines[counter]
-            console.log("Rendering", [text])
-            backCanvas.clear()
-            backCanvas.drawText(text)
-            counter = (counter + 1) % textLines.length
-            const coordsData = backCanvas.getCoords(frontCanvas.canvas)
-            frontCanvas.setCoordsData(coordsData)
-            frontCanvas.disturbAll()
-        }, 1000 * 60 * 1.5 / OPTS.speed)
-    }
-
-    const text = OPTS.randomText ? vectors.choice(textLines) : textLines[counter]
-    counter = (counter + 1) % textLines.length
-    backCanvas.clear()
-    backCanvas.drawText(text)
-    console.log("Rendering", [text])
-    const coordsData = backCanvas.getCoords(frontCanvas.canvas)
-    frontCanvas.setCoordsData(coordsData)
-}
-
 const main = () => {
     updateOpts()
-    initControls()
 
+    const backCanvas = new BackCanvas()
 
-    const frontCanvas = initCanvas()
-    showTextLines(frontCanvas)
+    const frontCanvas = new FrontCanvas({
+        speed: OPTS.speed,
+        demo: OPTS.demo
+    })
+    // window.frontCanvas = frontCanvas
+    frontCanvas.init()
+    frontCanvas.registerEventListeners()
 
-    // debugThoughts()
+    const ui = new UI({
+        show: !OPTS.hideUI,
+        frontCanvas
+    })
+    ui.registerEventListeners()
+
+    const renderer = new Renderer({
+        speed: OPTS.speed,
+        frontCanvas,
+        backCanvas,
+        random: OPTS.random,
+        shuffle: OPTS.shuffle,
+        texts: getTexts()
+    })
+
     let lastUpdate = new Date()
     setInterval(() => {
         const now = new Date()
         window.TIME_DELTA = (now - lastUpdate) / 1000
         lastUpdate = now
-        frontCanvas.update();
-        updateEffects(frontCanvas)
+        renderer.update()
+        frontCanvas.update()
+        ui.update()
     }, 10)
-    // console.log(COORDS)
 }
 
 window.onload = () => {
