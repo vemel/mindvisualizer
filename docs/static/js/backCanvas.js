@@ -1,3 +1,7 @@
+import * as vectors from './vectors.js'
+import Color from './color.js'
+
+
 export default class BackCanvas {
     font = 'Calibri'
 
@@ -17,9 +21,25 @@ export default class BackCanvas {
         return fontSize
     }
 
+    getTextGradient() {
+        const gradient = this.context.createLinearGradient(
+            0,
+            vectors.randInt(0, this.canvas.height),
+            this.canvas.width,
+            vectors.randInt(0, this.canvas.height)
+        )
+        gradient.addColorStop(0, `hsl(${vectors.randInt(0, 255)}, 100%, 50%)`)
+        gradient.addColorStop(0.4, `hsl(${vectors.randInt(0, 255)}, 100%, 50%)`)
+        gradient.addColorStop(0.5, `hsl(${vectors.randInt(0, 255)}, 100%, 50%)`)
+        gradient.addColorStop(0.6, `hsl(${vectors.randInt(0, 255)}, 100%, 50%)`)
+        gradient.addColorStop(1, `hsl(${vectors.randInt(0, 255)}, 100%, 50%)`)
+        return gradient
+    }
+
     drawText(text) {
         this.context.textAlign = "center"
         const lines = text.split(',')
+        this.context.fillStyle = this.getTextGradient()
         this.context.font = `bold ${this.getFontSize(lines)}px ${this.font}`
         const lineMeasures = this.context.measureText(text)
         const lineHeight = lineMeasures.fontBoundingBoxAscent
@@ -53,7 +73,7 @@ export default class BackCanvas {
             if (!alpha) continue;
             result[`${coords[0]},${coords[1]}`] = {
                 free: true,
-                color: [red, green, blue],
+                color: new Color(red, green, blue, alpha),
                 isBlack: red == green && green == blue && red < 10
             }
         }

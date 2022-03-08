@@ -1,5 +1,6 @@
 import * as vectors from './vectors.js'
 import Thought from './thought.js'
+import Color from './color.js'
 
 export default class FrontCanvas {
     maxThoughts = 5000
@@ -212,13 +213,7 @@ export default class FrontCanvas {
         const coordsStr = coords.map(x => x.toString()).join(',')
         // console.log(coordsStr)
         const coordsData = this.coordsData[coordsStr]
-        if (!coordsData) {
-            return vectors.getRandomColor()
-        }
-        if (coordsData.isBlack) {
-            // console.log('isBlack')
-            return vectors.getRandomColor()
-        }
+        if (!coordsData) return Color.random()
         return coordsData.color
     }
 }

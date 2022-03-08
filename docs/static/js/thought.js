@@ -1,4 +1,5 @@
 import * as vectors from './vectors.js'
+import Color from './color.js'
 
 
 export default class Thought {
@@ -55,9 +56,9 @@ export default class Thought {
     }
 
     getColor() {
-        if (!this.endColor) return this.startColor;
+        if (!this.endColor) return this.startColor.alpha(this.getAlpha())
         const t = vectors.divideNorm(this.getElapsedSeconds(), this.getTravelSeconds())
-        return vectors.lerpV3(this.startColor, this.endColor, t)
+        return this.startColor.lerp(this.endColor, t).alpha(this.getAlpha())
     }
 
     move({
@@ -114,11 +115,10 @@ export default class Thought {
         if (this.isDead()) return
         context.beginPath();
         context.arc(this.position[0], this.position[1], this.getRadius(), 0, 2 * Math.PI, false);
-        const color = this.getColor()
-        context.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${this.getAlpha()})`;
+        context.fillStyle = this.getColor().toRGBA();
         context.fill();
         context.lineWidth = 0;
-        context.strokeStyle = 'rgba(0, 0, 0, 0.0)';
+        context.strokeStyle = Color.black().alpha(0.0).toRGBA();
         context.stroke();
     }
 }
