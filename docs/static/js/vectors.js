@@ -72,6 +72,6 @@ export function getRandomColor() {
     ]
 }
 
-export function normalize10(x) {
-    return Math.max(0.0, Math.min(1.0, x))
+export function divideNorm(x, y) {
+    return Math.max(0.0, Math.min(1.0, x / (y || 0.000001)))
 }

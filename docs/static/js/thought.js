@@ -49,7 +49,7 @@ export default class Thought {
 
     getDieLerpT() {
         const now = new Date()
-        return 1.0 - Math.min(1.0, (this.died - now) / 500);
+        return 1.0 - vectors.divideNorm(this.died - now, 500.0)
     }
 
     getRadius() {
@@ -66,7 +66,7 @@ export default class Thought {
 
     getColor() {
         if (!this.endColor) return this.startColor;
-        const t = vectors.normalize10(this.getElapsedSeconds() / this.getTravelSeconds())
+        const t = vectors.divideNorm(this.getElapsedSeconds(), this.getTravelSeconds())
         return vectors.lerpV3(this.startColor, this.endColor, t)
     }
 
@@ -119,7 +119,7 @@ export default class Thought {
             // console.log('reached')
             return
         }
-        const ease = vectors.Easing.easeInOutQuad(elapsed / totalSeconds)
+        const ease = vectors.Easing.easeInOutQuad(vectors.divideNorm(elapsed, totalSeconds))
         const bezierStart = vectors.lerpV2(this.start, vectors.rotate(this.start, this.end, this.angle), ease)
         const bezierEnd = vectors.lerpV2(this.end, vectors.rotate(this.end, this.start, -this.angle), 1.0 - ease)
         this.position = vectors.lerpV2(bezierStart, bezierEnd, ease)
