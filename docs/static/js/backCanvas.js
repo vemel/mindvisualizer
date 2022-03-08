@@ -6,19 +6,31 @@ export default class BackCanvas {
         this.context = this.canvas.getContext('2d')
     }
 
-    drawText(text, canvas) {
-        this.context.textAlign = "center"
-        let fontsize = 100
-        do {
-            fontsize--;
-            this.context.font = `bold ${fontsize}px ${this.font}`;
-        } while (this.context.measureText(text).width > this.canvas.width - 40)
+    getFontSize(lines) {
+        let fontSize = 100
+        while (fontSize > 23) {
+            this.context.font = `bold ${fontSize}px ${this.font}`;
+            const lineFits = lines.every(line => this.context.measureText(line).width < this.canvas.width - 40)
+            if (lineFits) break
+            fontSize--
+        }
+        return fontSize
+    }
 
-        this.context.fillText(
-            text,
-            this.canvas.width / 2,
-            this.canvas.height / 2 + this.context.measureText(text).fontBoundingBoxAscent / 2
-        );
+    drawText(text) {
+        this.context.textAlign = "center"
+        const lines = text.split(',')
+        this.context.font = `bold ${this.getFontSize(lines)}px ${this.font}`
+        const lineMeasures = this.context.measureText(text)
+        const lineHeight = lineMeasures.fontBoundingBoxAscent
+
+        lines.forEach((line, index) => {
+            this.context.fillText(
+                line,
+                this.canvas.width / 2,
+                this.canvas.height / 2 + lineHeight - lines.length * lineHeight / 2 + index * lineHeight
+            );
+        })
     }
 
     clear() {
