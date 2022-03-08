@@ -4,14 +4,16 @@ import * as vectors from './vectors.js'
 export default class Thought {
     constructor({
         position,
-        context
+        frontCanvas,
+        speed
     }) {
+        this.frontCanvas = frontCanvas
         this.position = position
         this.start = position
-        this.context = context
+        this.context = frontCanvas.context
         this.random = Math.random()
         this.angle = ((Math.random() > 0.5) ? 1 : -1) * (Math.random() * 0.5 + 0.25) * Math.PI
-        this.speed = (15.0 + Math.random() * 10.0) * OPTS.speed
+        this.speed = speed
         this.created = new Date()
         this.died = null
 
@@ -27,7 +29,7 @@ export default class Thought {
 
     getTravelSeconds() {
         const distance = vectors.distance(this.start, this.end)
-        return Math.max(distance / this.speed, 20.0 / OPTS.speed)
+        return Math.max(distance / this.speed)
     }
 
     getEnded() {
@@ -62,40 +64,19 @@ export default class Thought {
         this.died = new Date(Date.now() + 500 + Math.random() * 2000)
     }
 
-    destroy() {
-        const index = THOUGHTS.indexOf(this)
-        THOUGHTS.splice(index, 1)
-    }
-
-    pickRandomCoords() {
-        const coords = Object.keys(COORDS)
-        if (!coords.length) return null
-
-        const coordsStr = vectors.choice(coords)
-        return coordsStr.split(',').map(x => parseInt(x))
-    }
-
-    getEndColor() {
-        const coordsStr = this.end.map(x => x.toString()).join(',')
-        const coordsData = COORDS[coordsStr]
-        if (!coordsData) return vectors.getRandomColor()
-        if (coordsData.isBlack) return vectors.getRandomColor()
-        return coordsData.color
-    }
-
     getColor() {
         if (!this.endColor) return this.startColor;
-        const t = this.getElapsedSeconds() / this.getTravelSeconds()
+        const t = vectors.normalize10(this.getElapsedSeconds() / this.getTravelSeconds())
         return vectors.lerpV3(this.startColor, this.endColor, t)
     }
 
     disturb() {
         this.start = this.position
-        this.end = this.pickRandomCoords()
+        this.end = this.frontCanvas.pickRandomCoords()
         this.started = new Date()
         this.startColor = this.endColor
         this.ended = this.getEnded()
-        this.endColor = this.getEndColor()
+        this.endColor = this.frontCanvas.getCoordsColor(this.end)
         if (!this.startColor) this.startColor = this.endColor
         this.rearranged = this.getNewRearranged()
     }
@@ -104,8 +85,13 @@ export default class Thought {
         return this.died ? true : false
     }
 
+    isDead() {
+        const now = new Date()
+        return this.died && this.died < now
+    }
+
     disturbDelayed() {
-        this.rearranged = new Date(Date.now() + 1000 * 30 * Math.random() / OPTS.speed)
+        this.rearranged = new Date(Date.now() + 1000 * Math.random() / this.speed)
     }
 
     getElapsedSeconds() {
@@ -113,12 +99,12 @@ export default class Thought {
     }
 
     update() {
-        const now = new Date()
-        if (this.died && this.died < now) {
-            this.destroy()
+        if (!this.end) {
+            console.log('no end')
             return
         }
-        if (!this.end) return
+        if (this.isDead()) return
+        const now = new Date()
         const totalSeconds = this.getTravelSeconds()
         const elapsed = this.getElapsedSeconds()
         if (now > this.rearranged) {
@@ -140,6 +126,7 @@ export default class Thought {
     }
 
     draw() {
+        if (this.isDead()) return
         const context = this.context
         context.beginPath();
         context.arc(this.position[0], this.position[1], this.getRadius(), 0, 2 * Math.PI, false);

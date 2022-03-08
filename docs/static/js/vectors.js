@@ -71,3 +71,7 @@ export function getRandomColor() {
         Math.floor(Math.random() * 255),
     ]
 }
+
+export function normalize10(x) {
+    return Math.max(0.0, Math.min(1.0, x))
+}
