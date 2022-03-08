@@ -11,6 +11,7 @@ export default class FrontCanvas {
         this.canvas = document.getElementById('front')
         this.context = this.canvas.getContext('2d')
         this.created = new Date()
+        this.coordsUpdated = new Date()
         this.thoughts = []
         this.speed = speed
         this.demo = demo
@@ -29,6 +30,10 @@ export default class FrontCanvas {
             speed: (15.0 + Math.random() * 10.0) * this.speed
         })
         this.thoughts.push(thought)
+        this.moveThought({
+            thought,
+            delay: 1.0 / this.speed
+        })
     }
 
     getCursorPosition(event) {
@@ -71,9 +76,30 @@ export default class FrontCanvas {
         const clickPosition = this.getCursorPosition(event)
         this.thoughts.forEach(thought => {
             if (vectors.distance(thought.position, clickPosition) < radius) {
-                thought.disturb()
+                this.moveThought({
+                    thought,
+                    delay: 0.0
+                })
             }
         })
+    }
+
+    updateThought(thought) {
+        if (thought.isDead()) {
+            this.thoughts.splice(this.thoughts.indexOf(thought), 1)
+            return
+        }
+        if (this.shouldMove(thought)) this.moveThought({
+            thought
+        })
+        thought.update()
+        thought.draw(this.context)
+    }
+
+    shouldMove(thought) {
+        if (Math.random() < 0.001) return true
+        if (thought.started > this.coordsUpdated) return false
+        return Math.random() < 0.03
     }
 
     update() {
@@ -81,11 +107,7 @@ export default class FrontCanvas {
         this.killOldest()
         if (this.demo) this.updateDemo()
         for (const thought of this.thoughts) {
-            if (thought.isDead()) {
-                this.thoughts.splice(this.thoughts.indexOf(thought), 1)
-            }
-            thought.update()
-            thought.draw()
+            this.updateThought(thought)
         }
     }
 
@@ -154,10 +176,29 @@ export default class FrontCanvas {
     setCoordsData(coordsData) {
         this.coordsData = coordsData
         this.coordsKeys = Object.keys(coordsData)
+        this.coordsUpdated = new Date()
+    }
+
+    moveThought({
+        thought,
+        delay = 0.0
+    }) {
+        const coords = this.pickRandomCoords()
+        const color = this.getCoordsColor(coords)
+        thought.move({
+            coords,
+            color,
+            delay
+        })
     }
 
     disturbAll() {
-        this.thoughts.forEach(thought => thought.disturbDelayed())
+        // this.thoughts.forEach(thought => {
+        //     this.moveThought({
+        //         thought,
+        //         delay: Math.random() * 10.0 / this.speed
+        //     })
+        // })
     }
 
     pickRandomCoords() {

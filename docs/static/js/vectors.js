@@ -75,3 +75,11 @@ export function getRandomColor() {
 export function divideNorm(x, y) {
     return Math.max(0.0, Math.min(1.0, x / (y || 0.000001)))
 }
+
+export function equalV2(p1, p2) {
+    return p1[0] === p2[0] && p1[1] === p2[1]
+}
+
+export function equalV3(p1, p2) {
+    return p1[0] === p2[0] && p1[1] === p2[1] && p1[2] === p2[2]
+}

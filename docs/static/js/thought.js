@@ -4,13 +4,10 @@ import * as vectors from './vectors.js'
 export default class Thought {
     constructor({
         position,
-        frontCanvas,
         speed
     }) {
-        this.frontCanvas = frontCanvas
         this.position = position
         this.start = position
-        this.context = frontCanvas.context
         this.random = Math.random()
         this.angle = ((Math.random() > 0.5) ? 1 : -1) * (Math.random() * 0.5 + 0.25) * Math.PI
         this.speed = speed
@@ -22,9 +19,6 @@ export default class Thought {
         this.end = null
         this.ended = null
         this.endColor = null
-        this.rearranged = null
-
-        this.disturb()
     }
 
     getTravelSeconds() {
@@ -41,10 +35,6 @@ export default class Thought {
         const dieMod = this.died ? vectors.lerp(1.0, 0.0, vectors.Easing.easeInOutQuad(this.getDieLerpT())) : 1.0
         const size = 0.4 + Math.sin((now - this.created) / 500 + this.random * 6) * 0.2
         return size * dieMod
-    }
-
-    getNewRearranged() {
-        return new Date(this.ended.getTime() + Math.floor((Math.random() * 100) * 1000))
     }
 
     getDieLerpT() {
@@ -70,15 +60,18 @@ export default class Thought {
         return vectors.lerpV3(this.startColor, this.endColor, t)
     }
 
-    disturb() {
+    move({
+        coords,
+        color,
+        delay
+    }) {
         this.start = this.position
-        this.end = this.frontCanvas.pickRandomCoords()
-        this.started = new Date()
+        this.end = coords
+        this.started = new Date(Date.now() + delay * 1000)
         this.startColor = this.endColor
         this.ended = this.getEnded()
-        this.endColor = this.frontCanvas.getCoordsColor(this.end)
+        this.endColor = color
         if (!this.startColor) this.startColor = this.endColor
-        this.rearranged = this.getNewRearranged()
     }
 
     isDying() {
@@ -90,8 +83,8 @@ export default class Thought {
         return this.died && this.died < now
     }
 
-    disturbDelayed() {
-        this.rearranged = new Date(Date.now() + 1000 * Math.random() / this.speed)
+    isLanded() {
+        return vectors.equalV2(this.position, this.end)
     }
 
     getElapsedSeconds() {
@@ -107,16 +100,8 @@ export default class Thought {
         const now = new Date()
         const totalSeconds = this.getTravelSeconds()
         const elapsed = this.getElapsedSeconds()
-        if (now > this.rearranged) {
-            // console.log(now, this.changeEnd)
-            this.disturb()
-            return
-        }
         if (now > this.ended) {
-            // this.end = this.pickRandomCoords()
-            // this.started = new Date()
-            this.position = this.end;
-            // console.log('reached')
+            this.position = this.end
             return
         }
         const ease = vectors.Easing.easeInOutQuad(vectors.divideNorm(elapsed, totalSeconds))
@@ -125,9 +110,8 @@ export default class Thought {
         this.position = vectors.lerpV2(bezierStart, bezierEnd, ease)
     }
 
-    draw() {
+    draw(context) {
         if (this.isDead()) return
-        const context = this.context
         context.beginPath();
         context.arc(this.position[0], this.position[1], this.getRadius(), 0, 2 * Math.PI, false);
         const color = this.getColor()
