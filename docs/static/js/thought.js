@@ -2,24 +2,27 @@ import * as vectors from './vectors.js'
 
 
 export default class Thought {
-    constructor({position, context}) {
-      this.position = position
-      this.start = position
-      this.context = context
-      this.random = Math.random()
-      this.angle = ((Math.random() > 0.5) ? 1 : -1) * (Math.random() * 0.5 + 0.25) * Math.PI
-      this.speed = (15.0 + Math.random() * 10.0) * OPTS.speed
-      this.created = new Date()
-      this.died = null
-      
-      this.startColor = null
-      this.started = null
-      this.end = null
-      this.ended = null
-      this.endColor = null
-      this.rearranged = null
+    constructor({
+        position,
+        context
+    }) {
+        this.position = position
+        this.start = position
+        this.context = context
+        this.random = Math.random()
+        this.angle = ((Math.random() > 0.5) ? 1 : -1) * (Math.random() * 0.5 + 0.25) * Math.PI
+        this.speed = (15.0 + Math.random() * 10.0) * OPTS.speed
+        this.created = new Date()
+        this.died = null
 
-      this.disturb()
+        this.startColor = null
+        this.started = null
+        this.end = null
+        this.ended = null
+        this.endColor = null
+        this.rearranged = null
+
+        this.disturb()
     }
 
     getTravelSeconds() {
@@ -33,7 +36,7 @@ export default class Thought {
 
     getAlpha() {
         const now = new Date()
-        const dieMod = this.died ? vectors.lerp(1.0, 0.0, vectors.Easing.easeInOutQuad(this.getDieLerpT())): 1.0
+        const dieMod = this.died ? vectors.lerp(1.0, 0.0, vectors.Easing.easeInOutQuad(this.getDieLerpT())) : 1.0
         const size = 0.4 + Math.sin((now - this.created) / 500 + this.random * 6) * 0.2
         return size * dieMod
     }
@@ -50,7 +53,7 @@ export default class Thought {
     getRadius() {
         const now = new Date()
         const bornMod = Math.min((now - this.created) / 1000, 1.0)
-        const dieMod = this.died ? vectors.lerp(1.0, 0.2, vectors.Easing.easeInOutQuad(this.getDieLerpT())): 1.0
+        const dieMod = this.died ? vectors.lerp(1.0, 0.2, vectors.Easing.easeInOutQuad(this.getDieLerpT())) : 1.0
         const size = 6.0 + Math.sin((now - this.created) / 1000 + this.random * 6) * 2.0;
         return bornMod * dieMod * size
     }
@@ -132,7 +135,7 @@ export default class Thought {
         }
         const ease = vectors.Easing.easeInOutQuad(elapsed / totalSeconds)
         const bezierStart = vectors.lerpV2(this.start, vectors.rotate(this.start, this.end, this.angle), ease)
-        const bezierEnd = vectors.lerpV2(this.end,  vectors.rotate(this.end, this.start, -this.angle), 1.0 - ease)
+        const bezierEnd = vectors.lerpV2(this.end, vectors.rotate(this.end, this.start, -this.angle), 1.0 - ease)
         this.position = vectors.lerpV2(bezierStart, bezierEnd, ease)
     }
 

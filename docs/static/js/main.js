@@ -15,14 +15,14 @@ window.THOUGHTS = []
 window.COORDS = {}
 
 function fitTextOnCanvas(text, canvas) {
-    let fontsize=100;
+    let fontsize = 100;
     const context = canvas.getContext('2d');
 
     // lower the font size until the text fits the canvas
-    do{
+    do {
         fontsize--;
         context.font = `bold ${fontsize}px Calibri`;
-    }while(context.measureText(text).width > canvas.width - 40)
+    } while (context.measureText(text).width > canvas.width - 40)
 
     // draw the text
     context.fillText(text, canvas.width / 2, canvas.height / 2 + context.measureText(text).fontBoundingBoxAscent / 2);
@@ -33,14 +33,14 @@ function getTexts() {
         get: (searchParams, prop) => searchParams.get(prop),
     });
     if (params.q) {
-        const encoded = window.btoa(unescape(encodeURIComponent( params.q )));
+        const encoded = window.btoa(unescape(encodeURIComponent(params.q)));
         // console.log(params.q, encoded)
         console.log(`http://localhost:8089/?bq=${encoded}`)
         localStorage.setItem("mindtext", params.q)
     }
     if (params.bq) {
         console.log(params.bq)
-        const decoded = decodeURIComponent(escape(window.atob( params.bq )));
+        const decoded = decodeURIComponent(escape(window.atob(params.bq)));
         localStorage.setItem("mindtext", decoded)
     }
     let result = ""
@@ -56,7 +56,9 @@ function getTexts() {
     return result.split(".").map(x => x.toUpperCase())
 }
 
-function getCoords({ text }) {
+function getCoords({
+    text
+}) {
     const canvas = document.getElementById('back');
     const frontCanvas = document.getElementById('front');
     const context = canvas.getContext('2d');
@@ -71,7 +73,7 @@ function getCoords({ text }) {
     const imgData = context.getImageData(0, 0, canvas.width, canvas.height)
     const data = imgData.data
     const result = {}
-    for(let i = 0; i < data.length; i += 4) {
+    for (let i = 0; i < data.length; i += 4) {
         const coords = [
             Math.floor((i / 4) % canvas.width / canvas.width * frontCanvas.width),
             Math.floor((i / 4) / canvas.width / canvas.height * frontCanvas.height),
@@ -109,7 +111,12 @@ function drawThoughts() {
     }
 }
 
-function generateThoughts({ canvas, event, chance, particles = 10 }) {
+function generateThoughts({
+    canvas,
+    event,
+    chance,
+    particles = 10
+}) {
     const clickPosition = getCursorPosition(canvas, event)
     const context = canvas.getContext('2d')
     for (let i = 0; i < particles; i++) {
@@ -120,7 +127,10 @@ function generateThoughts({ canvas, event, chance, particles = 10 }) {
             Math.floor(clickPosition[0] + radius * Math.sin(angle)),
             Math.floor(clickPosition[1] + radius * Math.cos(angle)),
         ]
-        const thought = new Thought({position, context});
+        const thought = new Thought({
+            position,
+            context
+        });
         THOUGHTS.push(thought)
     }
     updateEffects()
@@ -134,19 +144,19 @@ function generateThoughts({ canvas, event, chance, particles = 10 }) {
 function updateEffects() {
     const title = document.getElementById('title')
     // if (THOUGHTS.length >= 2000 && !title.classList.contains("hidden")) {
-        //     title.classList.add("hidden")
-        // }
-        // if (THOUGHTS.length < 2000 && title.classList.contains("hidden")) {
-            //     title.classList.remove("hidden")
-            // }
-            if (THOUGHTS.length >= 1000 && !title.classList.contains("glitch")) {
-                title.classList.add("glitch")
-                title.classList.add("layers")
-            }
-            if (THOUGHTS.length < 1000 && title.classList.contains("glitch")) {
-                title.classList.remove("glitch")
-                title.classList.remove("layers")
-            }
+    //     title.classList.add("hidden")
+    // }
+    // if (THOUGHTS.length < 2000 && title.classList.contains("hidden")) {
+    //     title.classList.remove("hidden")
+    // }
+    if (THOUGHTS.length >= 1000 && !title.classList.contains("glitch")) {
+        title.classList.add("glitch")
+        title.classList.add("layers")
+    }
+    if (THOUGHTS.length < 1000 && title.classList.contains("glitch")) {
+        title.classList.remove("glitch")
+        title.classList.remove("layers")
+    }
     // const plasmaCanvas = document.getElementById('plasma')
     // plasmaCanvas.style.opacity = Math.max(0.0, Math.min(0.8, (THOUGHTS.length - 1500) / 1000))
 }
@@ -154,7 +164,7 @@ function updateEffects() {
 function initCanvas() {
     const canvas = document.getElementById('front');
     let isDrawing = false;
-    canvas.addEventListener('mousedown', function(event) {
+    canvas.addEventListener('mousedown', function (event) {
         isDrawing = true;
         const clickPosition = getCursorPosition(canvas, event)
         THOUGHTS.forEach(thought => {
@@ -162,31 +172,51 @@ function initCanvas() {
                 thought.disturb()
             }
         })
-        generateThoughts({ canvas, event, chance: 0.5, particles: 10 * OPTS.speed })
+        generateThoughts({
+            canvas,
+            event,
+            chance: 0.5,
+            particles: 10 * OPTS.speed
+        })
     })
-    canvas.addEventListener('mouseup', function() {
+    canvas.addEventListener('mouseup', function () {
         isDrawing = false;
     })
 
-    canvas.addEventListener('mousemove', function(event) {
+    canvas.addEventListener('mousemove', function (event) {
         if (!isDrawing) return;
-        generateThoughts({ canvas, event, chance: 0.03, particles: 10 * OPTS.speed })
+        generateThoughts({
+            canvas,
+            event,
+            chance: 0.03,
+            particles: 10 * OPTS.speed
+        })
     })
 
-    canvas.addEventListener('touchstart', function(event) {
+    canvas.addEventListener('touchstart', function (event) {
         const clickPosition = getCursorPosition(canvas, event)
         THOUGHTS.forEach(thought => {
             if (vectors.distance(thought.position, clickPosition) < 50.0) {
                 thought.disturb()
             }
         })
-        generateThoughts({ canvas, event, chance: 0.5, particles: 10 * OPTS.speed })
+        generateThoughts({
+            canvas,
+            event,
+            chance: 0.5,
+            particles: 10 * OPTS.speed
+        })
     })
 
     canvas.addEventListener("touchmove", (event) => {
-        console.log('touchmove',event)
+        console.log('touchmove', event)
         for (const touchEvent of event.changedTouches) {
-            generateThoughts({ canvas, event: touchEvent, chance: 0.03, particles: 10 * OPTS.speed })
+            generateThoughts({
+                canvas,
+                event: touchEvent,
+                chance: 0.03,
+                particles: 10 * OPTS.speed
+            })
         }
     }, false);
 }
@@ -206,7 +236,10 @@ function debugThoughts() {
     const context = canvas.getContext('2d');
     for (const coordsStr of Object.keys(COORDS)) {
         const position = coordsStr.split(',').map(x => parseInt(x));
-        const thought = new Thought({position, context});
+        const thought = new Thought({
+            position,
+            context
+        });
         THOUGHTS.push(thought)
     }
 }
@@ -234,7 +267,7 @@ function maybeDemo() {
     const started = new Date()
     const center = [window.innerWidth / 2, window.innerHeight / 2]
     const start = [window.innerWidth / 2 - window.innerHeight * 0.4, window.innerHeight / 2]
-    setInterval(function() {
+    setInterval(function () {
         const angle = (new Date() - started) / 1000 * Math.PI
         const emitter = vectors.rotate(start, center, angle)
         generateThoughts({
@@ -254,17 +287,21 @@ const showTextLines = () => {
     let counter = 0;
     if (textLines.length > 1 && OPTS.shuffle) {
         setInterval(() => {
-            const text = OPTS.randomText ? vectors.choice(textLines): textLines[counter]
+            const text = OPTS.randomText ? vectors.choice(textLines) : textLines[counter]
             console.log("Rendering", [text])
             counter = (counter + 1) % textLines.length
-            COORDS = getCoords({ text })
+            COORDS = getCoords({
+                text
+            })
             THOUGHTS.forEach(thought => thought.disturbDelayed())
         }, 1000 * 60 * 1.5 / OPTS.speed)
     }
 
-    const text = OPTS.randomText ? vectors.choice(textLines): textLines[counter]
+    const text = OPTS.randomText ? vectors.choice(textLines) : textLines[counter]
     counter = (counter + 1) % textLines.length
-    COORDS = getCoords({ text })
+    COORDS = getCoords({
+        text
+    })
 }
 
 const main = () => {
@@ -285,8 +322,10 @@ const prefab = () => {
     const imageUrl = getImageUrl()
     if (imageUrl.length) {
         const backImg = new Image();
-        backImg.onload = function() {
-            main({ image: backImg })
+        backImg.onload = function () {
+            main({
+                image: backImg
+            })
         };
         backImg.src = imageUrl;
     } else {

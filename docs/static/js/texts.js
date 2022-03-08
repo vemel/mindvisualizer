@@ -19,17 +19,17 @@ export default {
         "¯\\_(ツ)_/¯",
         "🌈🐟",
         "🪄✨✨",
-        "секс",
-        "всё вижу",
+        "sex",
+        "I see all",
         "🍆👍",
         "🧁",
         "💊",
-        "как это?!",
-        "ебать секс",
-        "завтра!",
-        "вкусная еда",
-        "🌴лето🌴",
-        "💎энергия💰"
+        "WTF?!",
+        "FUCKING SEX",
+        "TOMORROW",
+        "tasty food",
+        "🌴summer🌴",
+        "💎energy💰"
     ],
     emoji: Array.from(Array(500).keys()).map(() => `${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}`)
 }
