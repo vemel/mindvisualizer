@@ -38,7 +38,6 @@ export default class Renderer {
         this.backCanvas.drawText(text)
         const coordsData = this.backCanvas.getCoords(this.frontCanvas.canvas)
         this.frontCanvas.setCoordsData(coordsData)
-        this.frontCanvas.disturbAll()
     }
 
     update() {

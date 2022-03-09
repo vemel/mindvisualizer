@@ -31,6 +31,10 @@ export default class Color {
     alpha(a) {
         return new Color(this.r, this.g, this.b, divideNorm(a))
     }
+
+    isTransparent() {
+        return this.a < 0.0001
+    }
 }
 
 Color.random = function () {

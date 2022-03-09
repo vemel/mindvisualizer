@@ -2,21 +2,6 @@ export function lerp(a, b, t) {
     return a + t * (b - a);
 };
 
-export function lerpV2(p0, p1, t) {
-    return [
-        lerp(p0[0], p1[0], t),
-        lerp(p0[1], p1[1], t)
-    ];
-};
-
-export function lerpV3(p0, p1, t) {
-    return [
-        lerp(p0[0], p1[0], t),
-        lerp(p0[1], p1[1], t),
-        lerp(p0[2], p1[2], t),
-    ];
-};
-
 export const Easing = {
     // no easing, no acceleration
     linear: t => t,
@@ -46,34 +31,12 @@ export const Easing = {
     easeInOutQuint: t => t < .5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t
 }
 
-export function distance(pt1, pt2) {
-    return Math.pow(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2), 0.5)
-}
-
-export function rotate(pt, center, angle) {
-    const length = distance(pt, center)
-    const origAngle = Math.atan2(pt[1] - center[1], pt[0] - center[0])
-    const newAngle = origAngle + angle
-    return [
-        center[0] + length * Math.sin(newAngle),
-        center[1] + length * Math.cos(newAngle),
-    ]
-}
-
 export function choice(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export function divideNorm(x, y = 1.0) {
     return Math.max(0.0, Math.min(1.0, x / (y || 0.000001)))
-}
-
-export function equalV2(p1, p2) {
-    return p1[0] === p2[0] && p1[1] === p2[1]
-}
-
-export function equalV3(p1, p2) {
-    return p1[0] === p2[0] && p1[1] === p2[1] && p1[2] === p2[2]
 }
 
 export function randInt(start, end) {

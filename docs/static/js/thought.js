@@ -23,7 +23,7 @@ export default class Thought {
     }
 
     getTravelSeconds() {
-        const distance = vectors.distance(this.start, this.end)
+        const distance = this.start.distance(this.end)
         return Math.max(distance / this.speed)
     }
 
@@ -85,10 +85,6 @@ export default class Thought {
         return this.died && this.died < now
     }
 
-    isLanded() {
-        return vectors.equalV2(this.position, this.end)
-    }
-
     getElapsedSeconds() {
         return (new Date() - this.started) / 1000
     }
@@ -107,15 +103,15 @@ export default class Thought {
             return
         }
         const ease = vectors.Easing.easeInOutQuad(vectors.divideNorm(elapsed, totalSeconds))
-        const bezierStart = vectors.lerpV2(this.start, vectors.rotate(this.start, this.end, this.angle), ease)
-        const bezierEnd = vectors.lerpV2(this.end, vectors.rotate(this.end, this.start, -this.angle), 1.0 - ease)
-        this.position = vectors.lerpV2(bezierStart, bezierEnd, ease)
+        const bezierStart = this.start.lerp(this.start.rotate(this.end, this.angle), ease)
+        const bezierEnd = this.end.lerp(this.end.rotate(this.start, -this.angle), 1.0 - ease)
+        this.position = bezierStart.lerp(bezierEnd, ease)
     }
 
     draw(context) {
         if (this.isDead()) return
         context.beginPath();
-        context.arc(this.position[0], this.position[1], this.getRadius(), 0, 2 * Math.PI, false);
+        context.arc(this.position.x, this.position.y, this.getRadius(), 0, 2 * Math.PI, false);
         context.fillStyle = this.getColor().toRGBA();
         context.fill();
         context.lineWidth = 0;

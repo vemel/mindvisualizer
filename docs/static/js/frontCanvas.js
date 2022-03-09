@@ -1,6 +1,7 @@
 import * as vectors from './vectors.js'
 import Thought from './thought.js'
 import Color from './color.js'
+import Coords from './coords.js'
 
 export default class FrontCanvas {
     maxThoughts = 5000
@@ -41,10 +42,7 @@ export default class FrontCanvas {
         const rect = this.canvas.getBoundingClientRect()
         const x = Math.floor((event.clientX - rect.left) / window.innerWidth * this.canvas.width)
         const y = Math.floor((event.clientY - rect.top) / window.innerHeight * this.canvas.height)
-        return [
-            x,
-            y
-        ]
+        return new Coords(x, y)
     }
 
     generateThoughts({
@@ -57,10 +55,10 @@ export default class FrontCanvas {
             if (Math.random() > chance) continue;
             const radius = 10 * Math.random()
             const angle = Math.PI * Math.random()
-            const position = [
-                Math.floor(clickPosition[0] + radius * Math.sin(angle)),
-                Math.floor(clickPosition[1] + radius * Math.cos(angle)),
-            ]
+            const position = new Coords(
+                Math.floor(clickPosition.x + radius * Math.sin(angle)),
+                Math.floor(clickPosition.y + radius * Math.cos(angle)),
+            )
             this.createThought(position);
         }
     }
@@ -76,7 +74,7 @@ export default class FrontCanvas {
         const radius = 50.0;
         const clickPosition = this.getCursorPosition(event)
         this.thoughts.forEach(thought => {
-            if (vectors.distance(thought.position, clickPosition) < radius) {
+            if (thought.position.distance(clickPosition) < radius) {
                 this.moveThought({
                     thought,
                     delay: 0.0
@@ -160,14 +158,14 @@ export default class FrontCanvas {
 
     updateDemo() {
         // if (this.thoughts.length >= this.maxThoughts) return;
-        const center = [window.innerWidth / 2, window.innerHeight / 2]
-        const start = [window.innerWidth / 2 - window.innerHeight * 0.4, window.innerHeight / 2]
+        const center = new Coords(window.innerWidth / 2, window.innerHeight / 2)
+        const start = new Coords(window.innerWidth / 2 - window.innerHeight * 0.4, window.innerHeight / 2)
         const angle = (new Date() - this.created) / 1000 * Math.PI
-        const emitter = vectors.rotate(start, center, angle)
+        const emitter = start.rotate(center, angle)
         this.generateThoughts({
             event: {
-                clientX: emitter[0],
-                clientY: emitter[1],
+                clientX: emitter.x,
+                clientY: emitter.y,
             },
             chance: TIME_DELTA * this.speed * 10,
             particles: 10
@@ -175,8 +173,11 @@ export default class FrontCanvas {
     }
 
     setCoordsData(coordsData) {
-        this.coordsData = coordsData
-        this.coordsKeys = Object.keys(coordsData)
+        this.coordsData = Object.fromEntries(Object.values(coordsData).map(data => {
+            const localCoords = new Coords(data.coords.x * this.canvas.width, data.coords.y * this.canvas.height)
+            return [localCoords, data]
+        }))
+        this.coordsKeys = Object.keys(this.coordsData)
         this.coordsUpdated = new Date()
     }
 
@@ -184,9 +185,10 @@ export default class FrontCanvas {
         thought,
         delay = 0.0
     }) {
-        const coords = this.pickRandomCoords()
-        if (!coords) return
-        const color = this.getCoordsColor(coords)
+        const coordsKey = this.pickRandomCoordsKey()
+        if (!coordsKey) return
+        const coords = Coords.fromString(coordsKey)
+        const color = this.getCoordsColor(coordsKey)
         thought.move({
             coords,
             color,
@@ -194,26 +196,13 @@ export default class FrontCanvas {
         })
     }
 
-    disturbAll() {
-        // this.thoughts.forEach(thought => {
-        //     this.moveThought({
-        //         thought,
-        //         delay: Math.random() * 10.0 / this.speed
-        //     })
-        // })
-    }
-
-    pickRandomCoords() {
+    pickRandomCoordsKey() {
         if (!this.coordsKeys.length) return null
-
-        const coordsStr = vectors.choice(this.coordsKeys)
-        return coordsStr.split(',').map(x => parseInt(x))
+        return vectors.choice(this.coordsKeys)
     }
 
-    getCoordsColor(coords) {
-        const coordsStr = coords.map(x => x.toString()).join(',')
-        // console.log(coordsStr)
-        const coordsData = this.coordsData[coordsStr]
+    getCoordsColor(coordsKey) {
+        const coordsData = this.coordsData[coordsKey]
         if (!coordsData) return Color.random()
         return coordsData.color
     }
