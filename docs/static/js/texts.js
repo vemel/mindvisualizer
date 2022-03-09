@@ -1,10 +1,8 @@
-import * as vectors from './vectors.js'
-
+import * as vectors from "./vectors.js";
 const EMOJIS = [
     ..."⭐🌹🌷👉👌💦🎁🥰✌💗🐈🍆👍🧁💊🔥🎄🥒🥕🥐🎈💡🗝️🎷🎮🏅🏆⚓🚕🛖✈️😆🥥🍒💩🤡",
-    ..."💍🐀💃🏻💅🥺🌈🐟👑✊🚑🚒🗿🔮💰❌🦽🏴‍☠️☝️🎉🥳🪅👮🤰🦄🐴🖕"
-]
-
+    ..."💍🐀💃🏻💅🥺🌈🐟👑✊🚑🚒🗿🔮💰❌🦽🏴‍☠️☝️🎉🥳🪅👮🤰🦄🐴🖕",
+];
 export default {
     demo: [
         "✌💗",
@@ -29,7 +27,7 @@ export default {
         "TOMORROW",
         "tasty food",
         "🌴summer🌴",
-        "💎energy💰"
+        "💎energy💰",
     ],
-    emoji: Array.from(Array(500).keys()).map(() => `${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}`)
-}
+    emoji: Array.from(Array(500).keys()).map(() => `${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}`),
+};
