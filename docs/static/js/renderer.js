@@ -36,7 +36,6 @@ export default class Renderer {
         this.textIndex = (this.textIndex + 1) % this.texts.length
         this.backCanvas.clear()
         this.backCanvas.drawText(text)
-        console.log("Rendering", [text])
         const coordsData = this.backCanvas.getCoords(this.frontCanvas.canvas)
         this.frontCanvas.setCoordsData(coordsData)
         this.frontCanvas.disturbAll()

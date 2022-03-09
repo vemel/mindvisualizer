@@ -56,6 +56,7 @@ export default class Thought {
     }
 
     getColor() {
+        if (!this.startColor) return Color.random()
         if (!this.endColor) return this.startColor.alpha(this.getAlpha())
         const t = vectors.divideNorm(this.getElapsedSeconds(), this.getTravelSeconds())
         return this.startColor.lerp(this.endColor, t).alpha(this.getAlpha())

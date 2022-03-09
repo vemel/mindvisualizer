@@ -185,6 +185,7 @@ export default class FrontCanvas {
         delay = 0.0
     }) {
         const coords = this.pickRandomCoords()
+        if (!coords) return
         const color = this.getCoordsColor(coords)
         thought.move({
             coords,

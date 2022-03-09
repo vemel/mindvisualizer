@@ -39,10 +39,11 @@ export default class BackCanvas {
     drawText(text) {
         this.context.textAlign = "center"
         const lines = text.split(',')
+        console.log("Rendering", lines)
         this.context.fillStyle = this.getTextGradient()
         this.context.font = `bold ${this.getFontSize(lines)}px ${this.font}`
         const lineMeasures = this.context.measureText(text)
-        const lineHeight = lineMeasures.fontBoundingBoxAscent
+        const lineHeight = Math.floor(lineMeasures.actualBoundingBoxAscent * 1.5)
 
         lines.forEach((line, index) => {
             this.context.fillText(
