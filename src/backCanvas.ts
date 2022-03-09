@@ -7,11 +7,20 @@ export default class BackCanvas {
   font = "Ubuntu";
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
-  lineHeight: number = 1.5;
+  lineHeight: number = 1.2;
 
   constructor() {
     this.canvas = <HTMLCanvasElement>document.getElementById("back");
     this.context = this.canvas.getContext("2d");
+  }
+
+  getLineHeights(lineMeasures: Array<TextMetrics>): Array<number> {
+    return lineMeasures.map(
+      (lineMeasure, index) => {
+        const height = lineMeasure.actualBoundingBoxAscent + lineMeasure.actualBoundingBoxDescent;
+        return (index > 0 ? this.lineHeight : 1.0) * height
+      }
+    )
   }
 
   getFontSize(lines: Array<string>): number {
@@ -22,11 +31,7 @@ export default class BackCanvas {
       const lineFitsHor = lineMeasures.every(
         (lineMeasure) => lineMeasure.width < this.canvas.width - 40
       );
-      const totalHeight = sum(
-        lineMeasures.map(
-          (lineMeasure) => lineMeasure.actualBoundingBoxAscent * this.lineHeight
-        )
-      );
+      const totalHeight = sum(this.getLineHeights(lineMeasures));
       const lineFitsVer = totalHeight < this.canvas.height - 60;
       if (lineFitsHor && lineFitsVer) break;
       fontSize -= 2;
@@ -55,20 +60,18 @@ export default class BackCanvas {
     console.log("Rendering", lines);
     this.context.fillStyle = this.getTextGradient();
     this.context.font = `bold ${this.getFontSize(lines)}px ${this.font}`;
-    const lineHeights = lines.map((line) =>
-      Math.floor(
-        this.context.measureText(line).actualBoundingBoxAscent * this.lineHeight
-      )
-    );
+    const lineMeasures = lines.map(line => this.context.measureText(line))
+    const lineHeights = this.getLineHeights(lineMeasures)
 
     lines.forEach((line, index) => {
+      const lineMeasure = lineMeasures[index]
+      const lineHeight = lineHeights[index]
+      const lineOffset = lineHeight - lineMeasure.actualBoundingBoxDescent
+      const y = this.canvas.height / 2 + lineOffset - sum(lineHeights) / 2 + sum(lineHeights.slice(0, index))
       this.context.fillText(
         line,
         this.canvas.width / 2,
-        this.canvas.height / 2 +
-        lineHeights[index] -
-        sum(lineHeights) / 2 +
-        sum(lineHeights.slice(0, index))
+        y
       );
     });
   }
