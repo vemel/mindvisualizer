@@ -13,3 +13,7 @@ export function divideNorm(x: number, y: number = 1.0): number {
 export function randInt(start: number, end: number): number {
   return start + Math.floor(Math.random() * (end - start + 1));
 }
+
+export function sum(items: Array<number>): number {
+  return items.reduce((x, s) => s + x, 0);
+}

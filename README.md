@@ -15,8 +15,7 @@ Query parameters:
 - `q` - Output text, dot-separated
 - `bq` - Base64-encoded output text
 - `speed` - Speed of visualization, float
-- `shuffle` - Switch to next text line, `true/false`
-- `random` - Randomize next text line, `true/false`
+- `shuffle` - Shuffle text lines, `true/false`
 - `demo` - Generate thoughts automatically
 - `ui` - Show header and reset button, `true/false`
 

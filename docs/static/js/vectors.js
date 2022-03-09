@@ -10,3 +10,6 @@ export function divideNorm(x, y = 1.0) {
 export function randInt(start, end) {
     return start + Math.floor(Math.random() * (end - start + 1));
 }
+export function sum(items) {
+    return items.reduce((x, s) => s + x, 0);
+}

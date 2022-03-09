@@ -25,16 +25,20 @@ export default {
     "🧁",
     "💊",
     "WTF?!",
-    "FUCKING SEX",
+    "FUCKING,SEX",
     "TOMORROW",
-    "tasty food",
+    "tasty,food",
     "🌴summer🌴",
     "💎energy💰",
   ],
-  emoji: Array.from(Array(500).keys()).map(
-    () =>
-      `${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}${vectors.choice(
-        EMOJIS
-      )}`
-  ),
+  emoji: [
+    ...new Set(
+      Array.from(Array(500).keys()).map(
+        () =>
+          `${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}${vectors.choice(
+            EMOJIS
+          )}`
+      )
+    ),
+  ],
 };

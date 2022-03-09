@@ -204,7 +204,7 @@ export default class FrontCanvas {
         clientX: emitter.x,
         clientY: emitter.y,
       },
-      chance: this.speed / 100,
+      chance: this.speed / 20,
       particles: 10,
     });
   }

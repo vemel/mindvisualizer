@@ -1,4 +1,4 @@
-import * as vectors from "./vectors.js";
+import { randInt, sum } from "./vectors.js";
 import Color from "./color.js";
 import Coords from "./coords.js";
 import { CoordsData } from "./interfaces.js";
@@ -29,15 +29,15 @@ export default class BackCanvas {
   getTextGradient(): CanvasGradient {
     const gradient = this.context.createLinearGradient(
       0,
-      vectors.randInt(0, this.canvas.height),
+      randInt(0, this.canvas.height),
       this.canvas.width,
-      vectors.randInt(0, this.canvas.height)
+      randInt(0, this.canvas.height)
     );
-    gradient.addColorStop(0, `hsl(${vectors.randInt(0, 255)}, 100%, 50%)`);
-    gradient.addColorStop(0.4, `hsl(${vectors.randInt(0, 255)}, 100%, 50%)`);
-    gradient.addColorStop(0.5, `hsl(${vectors.randInt(0, 255)}, 100%, 50%)`);
-    gradient.addColorStop(0.6, `hsl(${vectors.randInt(0, 255)}, 100%, 50%)`);
-    gradient.addColorStop(1, `hsl(${vectors.randInt(0, 255)}, 100%, 50%)`);
+    gradient.addColorStop(0, `hsl(${randInt(0, 255)}, 100%, 50%)`);
+    gradient.addColorStop(0.4, `hsl(${randInt(0, 255)}, 100%, 50%)`);
+    gradient.addColorStop(0.5, `hsl(${randInt(0, 255)}, 100%, 50%)`);
+    gradient.addColorStop(0.6, `hsl(${randInt(0, 255)}, 100%, 50%)`);
+    gradient.addColorStop(1, `hsl(${randInt(0, 255)}, 100%, 50%)`);
     return gradient;
   }
 
@@ -47,17 +47,18 @@ export default class BackCanvas {
     console.log("Rendering", lines);
     this.context.fillStyle = this.getTextGradient();
     this.context.font = `${this.getFontSize(lines)}px ${this.font}`;
-    const lineMeasures = this.context.measureText(text);
-    const lineHeight = Math.floor(lineMeasures.actualBoundingBoxAscent * 1.5);
+    const lineHeights = lines.map((line) =>
+      Math.floor(this.context.measureText(line).actualBoundingBoxAscent * 1.3)
+    );
 
     lines.forEach((line, index) => {
       this.context.fillText(
         line,
         this.canvas.width / 2,
         this.canvas.height / 2 +
-          lineHeight -
-          (lines.length * lineHeight) / 2 +
-          index * lineHeight
+          lineHeights[index] -
+          sum(lineHeights) / 2 +
+          sum(lineHeights.slice(0, index))
       );
     });
   }

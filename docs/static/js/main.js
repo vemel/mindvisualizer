@@ -6,7 +6,6 @@ import UI from "./ui.js";
 const OPTS = {
     maxThoughts: 2500,
     speed: 2.0,
-    random: true,
     shuffle: true,
     demo: false,
     hideUI: false,
@@ -42,8 +41,6 @@ function updateOpts() {
         OPTS.demo = params.get("demo") === "true";
     if (params.get("speed"))
         OPTS.speed = parseFloat(params.get("speed"));
-    if (params.get("random"))
-        OPTS.random = params.get("random") === "true";
     if (params.get("shuffle"))
         OPTS.shuffle = params.get("shuffle") === "true";
     if (params.get("ui"))
@@ -68,7 +65,6 @@ const main = () => {
         speed: OPTS.speed,
         frontCanvas,
         backCanvas,
-        random: OPTS.random,
         shuffle: OPTS.shuffle,
         texts: getTexts(),
     });
