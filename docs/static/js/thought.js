@@ -23,9 +23,12 @@ export default class Thought {
     getEnded() {
         return new Date(this.started.getTime() + this.getTravelSeconds() * 1000);
     }
+    easeInOutQuad(t) {
+        return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    }
     getAlpha() {
         const dieMod = this.died
-            ? vectors.lerp(1.0, 0.0, vectors.Easing.easeInOutQuad(this.getDieLerpT()))
+            ? vectors.lerp(1.0, 0.0, this.easeInOutQuad(this.getDieLerpT()))
             : 1.0;
         const size = 0.4 +
             Math.sin((Date.now() - this.created.getTime()) / 500 + this.random * 6) *
@@ -38,7 +41,7 @@ export default class Thought {
     getRadius() {
         const bornMod = Math.min((Date.now() - this.created.getTime()) / 1000, 1.0);
         const dieMod = this.died
-            ? vectors.lerp(1.0, 0.2, vectors.Easing.easeInOutQuad(this.getDieLerpT()))
+            ? vectors.lerp(1.0, 0.2, this.easeInOutQuad(this.getDieLerpT()))
             : 1.0;
         const size = 6.0 +
             Math.sin((Date.now() - this.created.getTime()) / 1000 + this.random * 6) *
@@ -90,7 +93,7 @@ export default class Thought {
             this.position = this.end;
             return;
         }
-        const ease = vectors.Easing.easeInOutQuad(vectors.divideNorm(elapsed, totalSeconds));
+        const ease = this.easeInOutQuad(vectors.divideNorm(elapsed, totalSeconds));
         const bezierStart = this.start.lerp(this.start.rotate(this.end, this.angle), ease);
         const bezierEnd = this.end.lerp(this.end.rotate(this.start, -this.angle), 1.0 - ease);
         this.position = bezierStart.lerp(bezierEnd, ease);
