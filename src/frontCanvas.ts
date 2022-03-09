@@ -2,7 +2,7 @@ import * as vectors from "./vectors.js";
 import Thought from "./thought.js";
 import Color from "./color.js";
 import Coords from "./coords.js";
-import { CoordsData } from "./interfaces.js";
+import { ICoordsData, IClickEvent } from "./interfaces.js";
 
 export default class FrontCanvas {
   maxThoughts = 5000;
@@ -13,7 +13,7 @@ export default class FrontCanvas {
   thoughts: Array<Thought>;
   speed: number;
   demo: boolean;
-  coordsData: Map<string, CoordsData>;
+  coordsData: Map<string, ICoordsData>;
   coordsKeys: Array<string>;
 
   constructor({ speed = 1.0, demo = false }: { speed: number; demo: boolean }) {
@@ -46,19 +46,13 @@ export default class FrontCanvas {
     return thought;
   }
 
-  getCursorPosition({
-    clientX,
-    clientY,
-  }: {
-    clientX: number;
-    clientY: number;
-  }): Coords {
+  getCursorPosition(event: IClickEvent): Coords {
     const rect = this.canvas.getBoundingClientRect();
     const x = Math.floor(
-      ((clientX - rect.left) / window.innerWidth) * this.canvas.width
+      ((event.clientX - rect.left) / window.innerWidth) * this.canvas.width
     );
     const y = Math.floor(
-      ((clientY - rect.top) / window.innerHeight) * this.canvas.height
+      ((event.clientY - rect.top) / window.innerHeight) * this.canvas.height
     );
     return new Coords(x, y);
   }
@@ -68,10 +62,7 @@ export default class FrontCanvas {
     chance,
     particles = 10,
   }: {
-    event: {
-      clientX: number;
-      clientY: number;
-    };
+    event: IClickEvent;
     chance: number;
     particles: number;
   }): void {
@@ -97,7 +88,7 @@ export default class FrontCanvas {
       });
   }
 
-  disturbThoughts(event: { clientX: number; clientY: number }): void {
+  disturbThoughts(event: IClickEvent): void {
     const radius = 50.0;
     const clickPosition = this.getCursorPosition(event);
     this.thoughts.forEach((thought) => {
@@ -209,7 +200,7 @@ export default class FrontCanvas {
     });
   }
 
-  setCoordsData(coordsData: Map<string, CoordsData>): void {
+  setCoordsData(coordsData: Map<string, ICoordsData>): void {
     this.coordsData.clear();
     for (const data of coordsData.values()) {
       const localCoords = new Coords(

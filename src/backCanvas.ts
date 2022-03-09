@@ -1,7 +1,7 @@
 import { randInt, sum } from "./vectors.js";
 import Color from "./color.js";
 import Coords from "./coords.js";
-import { CoordsData } from "./interfaces.js";
+import { ICoordsData } from "./interfaces.js";
 
 export default class BackCanvas {
   font = "Calibri";
@@ -77,7 +77,7 @@ export default class BackCanvas {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  getCoords(): Map<string, CoordsData> {
+  getCoords(): Map<string, ICoordsData> {
     const imageData = this.context.getImageData(
       0,
       0,

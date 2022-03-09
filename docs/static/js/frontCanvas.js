@@ -31,10 +31,10 @@ export default class FrontCanvas {
         });
         return thought;
     }
-    getCursorPosition({ clientX, clientY, }) {
+    getCursorPosition(event) {
         const rect = this.canvas.getBoundingClientRect();
-        const x = Math.floor(((clientX - rect.left) / window.innerWidth) * this.canvas.width);
-        const y = Math.floor(((clientY - rect.top) / window.innerHeight) * this.canvas.height);
+        const x = Math.floor(((event.clientX - rect.left) / window.innerWidth) * this.canvas.width);
+        const y = Math.floor(((event.clientY - rect.top) / window.innerHeight) * this.canvas.height);
         return new Coords(x, y);
     }
     generateThoughts({ event, chance, particles = 10, }) {
