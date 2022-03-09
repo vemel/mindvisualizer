@@ -11,7 +11,7 @@ export default class BackCanvas {
     getFontSize(lines) {
         let fontSize = 100;
         while (fontSize > 23) {
-            this.context.font = `${fontSize}px ${this.font}`;
+            this.context.font = `bold ${fontSize}px ${this.font}`;
             const lineMeasures = lines.map((line) => this.context.measureText(line));
             const lineFitsHor = lineMeasures.every((lineMeasure) => lineMeasure.width < this.canvas.width - 40);
             const totalHeight = sum(lineMeasures.map((lineMeasure) => lineMeasure.actualBoundingBoxAscent * this.lineHeight));
@@ -36,7 +36,7 @@ export default class BackCanvas {
         const lines = text.split(",");
         console.log("Rendering", lines);
         this.context.fillStyle = this.getTextGradient();
-        this.context.font = `${this.getFontSize(lines)}px ${this.font}`;
+        this.context.font = `bold ${this.getFontSize(lines)}px ${this.font}`;
         const lineHeights = lines.map((line) => Math.floor(this.context.measureText(line).actualBoundingBoxAscent * this.lineHeight));
         lines.forEach((line, index) => {
             this.context.fillText(line, this.canvas.width / 2, this.canvas.height / 2 +
@@ -54,16 +54,12 @@ export default class BackCanvas {
         const result = new Map();
         for (let i = 0; i < data.length; i += 4) {
             const coords = new Coords(((i / 4) % this.canvas.width) / this.canvas.width, i / 4 / this.canvas.width / this.canvas.height);
-            const red = data[i];
-            const green = data[i + 1];
-            const blue = data[i + 2];
-            const alpha = data[i + 3];
-            const color = new Color(...data.slice(i, i + 4));
+            const color = new Color(...data.slice(i, i + 3), data[i + 3] / 255.0);
             if (color.isTransparent())
                 continue;
             result.set(coords.toString(), {
                 coords,
-                color: new Color(red, green, blue, alpha),
+                color,
             });
         }
         return result;

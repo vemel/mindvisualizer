@@ -74,9 +74,11 @@ export default class Thought {
 
   getColor(): Color {
     if (!this.startColor) return new Color().random();
-    if (!this.endColor) return this.startColor.alpha(this.getAlpha());
+    if (!this.endColor)
+      return this.startColor.alpha(this.startColor.a * this.getAlpha());
     const t = divideNorm(this.getElapsedSeconds(), this.getTravelSeconds());
-    return this.startColor.lerp(this.endColor, t).alpha(this.getAlpha());
+    const color = this.startColor.lerp(this.endColor, t);
+    return color.alpha(color.a * this.getAlpha());
   }
 
   move({

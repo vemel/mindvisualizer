@@ -52,9 +52,10 @@ export default class Thought {
         if (!this.startColor)
             return new Color().random();
         if (!this.endColor)
-            return this.startColor.alpha(this.getAlpha());
+            return this.startColor.alpha(this.startColor.a * this.getAlpha());
         const t = divideNorm(this.getElapsedSeconds(), this.getTravelSeconds());
-        return this.startColor.lerp(this.endColor, t).alpha(this.getAlpha());
+        const color = this.startColor.lerp(this.endColor, t);
+        return color.alpha(color.a * this.getAlpha());
     }
     move({ coords, color, delay, }) {
         this.start = this.position;
