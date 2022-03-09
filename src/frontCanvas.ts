@@ -97,7 +97,7 @@ export default class FrontCanvas {
       });
   }
 
-  disturbThoughts(event) {
+  disturbThoughts(event: { clientX: number; clientY: number }): void {
     const radius = 50.0;
     const clickPosition = this.getCursorPosition(event);
     this.thoughts.forEach((thought) => {
@@ -166,7 +166,7 @@ export default class FrontCanvas {
 
     this.canvas.addEventListener("touchstart", function (event) {
       for (const touchEvent of event.changedTouches) {
-        _this.disturbThoughts(event);
+        _this.disturbThoughts(touchEvent);
         _this.generateThoughts({
           event: touchEvent,
           chance: 0.5,

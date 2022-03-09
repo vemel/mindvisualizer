@@ -13,3 +13,6 @@ export function randInt(start, end) {
 export function sum(items) {
     return items.reduce((x, s) => s + x, 0);
 }
+export function easeInOutQuad(t) {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+}
