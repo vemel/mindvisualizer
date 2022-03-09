@@ -3,6 +3,7 @@ import Color from "./color.js";
 
 export interface ICoordsData {
   coords: Coords;
+  localCoords: Coords;
   color: Color;
 }
 

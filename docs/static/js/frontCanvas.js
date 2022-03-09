@@ -1,4 +1,4 @@
-import * as vectors from "./vectors.js";
+import { randInt, choice } from "./vectors.js";
 import Thought from "./thought.js";
 import Color from "./color.js";
 import Coords from "./coords.js";
@@ -25,10 +25,7 @@ export default class FrontCanvas {
             speed: (15.0 + Math.random() * 10.0) * this.speed,
         });
         this.thoughts.push(thought);
-        this.moveThought({
-            thought,
-            delay: 1.0 / this.speed,
-        });
+        this.moveThought(thought, 1.0 / this.speed);
         return thought;
     }
     getCursorPosition(event) {
@@ -63,10 +60,7 @@ export default class FrontCanvas {
         const clickPosition = this.getCursorPosition(event);
         this.thoughts.forEach((thought) => {
             if (thought.position.distance(clickPosition) < radius) {
-                this.moveThought({
-                    thought,
-                    delay: 0.0,
-                });
+                this.moveThought(thought);
             }
         });
     }
@@ -76,10 +70,7 @@ export default class FrontCanvas {
             return;
         }
         if (this.shouldMove(thought))
-            this.moveThought({
-                thought,
-                delay: 0.0,
-            });
+            this.moveThought(thought);
         thought.update();
         thought.draw(this.context);
     }
@@ -162,32 +153,26 @@ export default class FrontCanvas {
         this.coordsData.clear();
         for (const data of coordsData.values()) {
             const localCoords = new Coords(data.coords.x * this.canvas.width, data.coords.y * this.canvas.height);
-            this.coordsData.set(localCoords.toString(), data);
+            this.coordsData.set(localCoords.toString(), Object.assign(Object.assign({}, data), { localCoords }));
         }
         this.coordsKeys = [...this.coordsData.keys()];
         this.coordsUpdated = new Date();
     }
-    moveThought({ thought, delay }) {
+    moveThought(thought, delay = 0.0) {
         const coordsKey = this.pickRandomCoordsKey();
-        if (!coordsKey)
-            return;
-        const coords = new Coords(0, 0).fromString(coordsKey);
-        const color = this.getCoordsColor(coordsKey);
+        const coordsData = this.coordsData.get(coordsKey) || {
+            color: new Color().random(),
+            localCoords: new Coords(randInt(0, this.canvas.width), randInt(0, this.canvas.height))
+        };
         thought.move({
-            coords,
-            color,
+            coords: coordsData.localCoords,
+            color: coordsData.color,
             delay,
         });
     }
     pickRandomCoordsKey() {
         if (!this.coordsKeys.length)
             return null;
-        return vectors.choice(this.coordsKeys);
-    }
-    getCoordsColor(coordsKey) {
-        const coordsData = this.coordsData.get(coordsKey);
-        if (!coordsData)
-            return new Color().random();
-        return coordsData.color;
+        return choice(this.coordsKeys);
     }
 }

@@ -41,12 +41,22 @@ function getTexts() {
 function updateOpts() {
   const params = new URLSearchParams(window.location.search);
   if (params.get("demo")) OPTS.demo = params.get("demo") === "true";
-  if (params.get("speed")) OPTS.speed = parseFloat(params.get("speed"));
+  if (params.get("speed")) OPTS.speed = Number(params.get("speed"));
   if (params.get("shuffle")) OPTS.shuffle = params.get("shuffle") === "true";
   if (params.get("ui")) OPTS.hideUI = params.get("ui") === "false";
 }
 
+function loadFonts() {
+  const WebFont = (window as any).WebFont;
+  WebFont.load({
+    google: {
+      families: ['Ubuntu']
+    }
+  });
+}
+
 const main = () => {
+  loadFonts();
   updateOpts();
 
   const backCanvas = new BackCanvas();
@@ -55,7 +65,6 @@ const main = () => {
     speed: OPTS.speed,
     demo: OPTS.demo,
   });
-  // window.frontCanvas = frontCanvas
   frontCanvas.init();
   frontCanvas.registerEventListeners();
 
@@ -73,10 +82,8 @@ const main = () => {
     texts: getTexts(),
   });
 
-  let lastUpdate = new Date();
   setInterval(() => {
     const now = new Date();
-    lastUpdate = now;
     renderer.update();
     frontCanvas.update();
     ui.update();

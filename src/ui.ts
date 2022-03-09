@@ -1,10 +1,10 @@
 import FrontCanvas from "./frontCanvas.js";
 
 export default class UI {
-  title: HTMLElement;
-  controls: HTMLElement;
-  frontCanvas: FrontCanvas;
-  show: boolean;
+  readonly title: HTMLElement;
+  readonly controls: HTMLElement;
+  readonly frontCanvas: FrontCanvas;
+  readonly show: boolean;
   constructor({
     frontCanvas,
     show,

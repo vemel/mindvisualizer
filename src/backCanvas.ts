@@ -4,7 +4,7 @@ import Coords from "./coords.js";
 import { ICoordsData } from "./interfaces.js";
 
 export default class BackCanvas {
-  font = "Calibri";
+  font = "Ubuntu";
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
   lineHeight: number = 1.5;
@@ -15,7 +15,7 @@ export default class BackCanvas {
   }
 
   getFontSize(lines: Array<string>): number {
-    let fontSize = 100;
+    let fontSize = 200;
     while (fontSize > 23) {
       this.context.font = `bold ${fontSize}px ${this.font}`;
       const lineMeasures = lines.map((line) => this.context.measureText(line));
@@ -29,7 +29,7 @@ export default class BackCanvas {
       );
       const lineFitsVer = totalHeight < this.canvas.height - 60;
       if (lineFitsHor && lineFitsVer) break;
-      fontSize--;
+      fontSize -= 2;
     }
     return fontSize;
   }
@@ -66,9 +66,9 @@ export default class BackCanvas {
         line,
         this.canvas.width / 2,
         this.canvas.height / 2 +
-          lineHeights[index] -
-          sum(lineHeights) / 2 +
-          sum(lineHeights.slice(0, index))
+        lineHeights[index] -
+        sum(lineHeights) / 2 +
+        sum(lineHeights.slice(0, index))
       );
     });
   }
@@ -94,6 +94,7 @@ export default class BackCanvas {
       const color = new Color(...data.slice(i, i + 3), data[i + 3] / 255.0);
       if (color.isTransparent()) continue;
       result.set(coords.toString(), {
+        localCoords: new Coords(coords.x * this.canvas.width, coords.y * this.canvas.height),
         coords,
         color,
       });

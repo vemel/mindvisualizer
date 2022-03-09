@@ -3,13 +3,13 @@ import Color from "./color.js";
 import Coords from "./coords.js";
 export default class BackCanvas {
     constructor() {
-        this.font = "Calibri";
+        this.font = "Ubuntu";
         this.lineHeight = 1.5;
         this.canvas = document.getElementById("back");
         this.context = this.canvas.getContext("2d");
     }
     getFontSize(lines) {
-        let fontSize = 100;
+        let fontSize = 200;
         while (fontSize > 23) {
             this.context.font = `bold ${fontSize}px ${this.font}`;
             const lineMeasures = lines.map((line) => this.context.measureText(line));
@@ -18,7 +18,7 @@ export default class BackCanvas {
             const lineFitsVer = totalHeight < this.canvas.height - 60;
             if (lineFitsHor && lineFitsVer)
                 break;
-            fontSize--;
+            fontSize -= 2;
         }
         return fontSize;
     }
@@ -58,6 +58,7 @@ export default class BackCanvas {
             if (color.isTransparent())
                 continue;
             result.set(coords.toString(), {
+                localCoords: new Coords(coords.x * this.canvas.width, coords.y * this.canvas.height),
                 coords,
                 color,
             });

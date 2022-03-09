@@ -1,5 +1,12 @@
+@font-face {
+    font-family: 'Ubuntu', sans-serif;
+    src: url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Ubuntu';
     overflow: hidden;
     background-color: black;
     margin: 0px;

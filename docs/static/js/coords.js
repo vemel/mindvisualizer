@@ -25,9 +25,4 @@ export default class Coords {
     toString() {
         return `${this.x.toFixed(6)},${this.y.toFixed(6)}`;
     }
-    fromString(str) {
-        const x = parseFloat(str.split(",")[0]);
-        const y = parseFloat(str.split(",")[1]);
-        return new Coords(x, y);
-    }
 }

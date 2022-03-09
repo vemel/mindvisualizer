@@ -1,10 +1,10 @@
 import { randInt, lerp, divideNorm } from "./vectors.js";
 
 export default class Color {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
+  readonly r: number;
+  readonly g: number;
+  readonly b: number;
+  readonly a: number;
 
   constructor(r: number = 0, g: number = 0, b: number = 0, a: number = 1.0) {
     this.r = r;
@@ -41,4 +41,5 @@ export default class Color {
   random(): Color {
     return new Color(randInt(0, 255), randInt(0, 255), randInt(0, 255), 1.0);
   }
+
 }

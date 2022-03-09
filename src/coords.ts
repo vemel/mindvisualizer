@@ -1,8 +1,8 @@
 import { lerp } from "./vectors.js";
 
 export default class Coords {
-  x: number;
-  y: number;
+  readonly x: number;
+  readonly y: number;
 
   constructor(x: number, y: number) {
     this.x = x;
@@ -43,11 +43,5 @@ export default class Coords {
 
   toString(): string {
     return `${this.x.toFixed(6)},${this.y.toFixed(6)}`;
-  }
-
-  fromString(str: string): Coords {
-    const x = parseFloat(str.split(",")[0]);
-    const y = parseFloat(str.split(",")[1]);
-    return new Coords(x, y);
   }
 }

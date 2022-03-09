@@ -2,8 +2,8 @@ import BackCanvas from "./backCanvas.js";
 import FrontCanvas from "./frontCanvas.js";
 
 class OrderedIterator<T> {
-  items: Array<T>;
-  index: number;
+  readonly items: Array<T>;
+  protected index: number;
   constructor(items: Array<T>) {
     this.items = items;
     this.index = 0;
