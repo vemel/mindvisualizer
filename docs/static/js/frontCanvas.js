@@ -88,7 +88,7 @@ export default class FrontCanvas {
             return true;
         if (thought.started > this.coordsUpdated)
             return false;
-        return Math.random() < 0.03;
+        return Math.random() < 0.02;
     }
     update() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);

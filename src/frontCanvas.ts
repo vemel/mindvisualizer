@@ -118,7 +118,7 @@ export default class FrontCanvas {
   shouldMove(thought: Thought): boolean {
     if (Math.random() < 0.001) return true;
     if (thought.started > this.coordsUpdated) return false;
-    return Math.random() < 0.03;
+    return Math.random() < 0.02;
   }
 
   update(): void {
