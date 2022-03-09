@@ -58,6 +58,7 @@ const main = () => {
     loadFonts();
     updateOpts();
     const backCanvas = new BackCanvas();
+    backCanvas.init();
     const frontCanvas = new FrontCanvas({
         speed: OPTS.speed,
         demo: OPTS.demo,

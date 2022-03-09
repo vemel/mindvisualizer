@@ -25,4 +25,7 @@ export default class Coords {
     toString() {
         return `${this.x.toFixed(6)},${this.y.toFixed(6)}`;
     }
+    resize(xCoef, yCoef) {
+        return new Coords(this.x * xCoef, this.y * yCoef);
+    }
 }

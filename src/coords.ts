@@ -44,4 +44,8 @@ export default class Coords {
   toString(): string {
     return `${this.x.toFixed(6)},${this.y.toFixed(6)}`;
   }
+
+  resize(xCoef: number, yCoef: number): Coords {
+    return new Coords(this.x * xCoef, this.y * yCoef)
+  }
 }

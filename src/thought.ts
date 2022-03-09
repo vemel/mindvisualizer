@@ -1,38 +1,41 @@
 import { easeInOutQuad, lerp, divideNorm } from "./vectors.js";
 import Color from "./color.js";
 import Coords from "./coords.js";
+import { ICoordsData } from "./interfaces.js";
 
 export default class Thought {
   position: Coords;
-  start: Coords;
+  start: ICoordsData;
+  end: ICoordsData;
   random: number;
   angle: number;
   speed: number;
   created: Date;
   died: Date | null;
-  startColor: Color | null;
   started: Date | null;
-  end: Coords | null;
   ended: Date | null;
-  endColor: Color | null;
-  constructor({ position, speed }: { position: Coords; speed: number }) {
+  constructor(position: Coords, speed: number) {
     this.position = position;
-    this.start = position;
+    this.start = {
+      coords: position,
+      color: new Color().random()
+    }
+    this.end = {
+      coords: position,
+      color: new Color().random()
+    }
     this.random = Math.random();
     this.angle = (Math.random() - 0.5) * 2 * Math.PI;
     this.speed = speed;
     this.created = new Date();
     this.died = null;
 
-    this.startColor = null;
     this.started = null;
-    this.end = null;
     this.ended = null;
-    this.endColor = null;
   }
 
   getTravelSeconds(): number {
-    const distance = this.start.distance(this.end);
+    const distance = this.start.coords.distance(this.end.coords);
     return Math.max(distance / this.speed);
   }
 
@@ -47,7 +50,7 @@ export default class Thought {
     const size =
       0.4 +
       Math.sin((Date.now() - this.created.getTime()) / 500 + this.random * 6) *
-        0.2;
+      0.2;
     return size * dieMod;
   }
 
@@ -63,7 +66,7 @@ export default class Thought {
     const size =
       6.0 +
       Math.sin((Date.now() - this.created.getTime()) / 1000 + this.random * 6) *
-        2.0;
+      2.0;
     return bornMod * dieMod * size;
   }
 
@@ -72,11 +75,8 @@ export default class Thought {
   }
 
   getColor(): Color {
-    if (!this.startColor) return new Color().random();
-    if (!this.endColor)
-      return this.startColor.alpha(this.startColor.a * this.getAlpha());
     const t = divideNorm(this.getElapsedSeconds(), this.getTravelSeconds());
-    const color = this.startColor.lerp(this.endColor, t);
+    const color = this.start.color.lerp(this.end.color, t);
     return color.alpha(color.a * this.getAlpha());
   }
 
@@ -89,13 +89,12 @@ export default class Thought {
     color: Color;
     delay: number;
   }): void {
-    this.start = this.position;
-    this.end = coords;
+    this.start.coords = this.position;
+    this.end.coords = coords;
     this.started = new Date(Date.now() + delay * 1000);
-    this.startColor = this.endColor;
+    this.start.color = this.end.color;
     this.ended = this.getEnded();
-    this.endColor = color;
-    if (!this.startColor) this.startColor = this.endColor;
+    this.end.color = color;
   }
 
   isDying(): boolean {
@@ -118,16 +117,16 @@ export default class Thought {
     const totalSeconds = this.getTravelSeconds();
     const elapsed = this.getElapsedSeconds();
     if (now > this.ended) {
-      this.position = this.end;
+      this.position = this.end.coords;
       return;
     }
     const ease = easeInOutQuad(divideNorm(elapsed, totalSeconds));
-    const bezierStart = this.start.lerp(
-      this.start.rotate(this.end, this.angle).scale(1.5, this.start),
+    const bezierStart = this.start.coords.lerp(
+      this.start.coords.rotate(this.end.coords, this.angle).scale(1.5, this.start.coords),
       ease
     );
-    const bezierEnd = this.end.lerp(
-      this.end.rotate(this.start, -this.angle).scale(1.5, this.start),
+    const bezierEnd = this.end.coords.lerp(
+      this.end.coords.rotate(this.start.coords, -this.angle).scale(1.5, this.start.coords),
       1.0 - ease
     );
     this.position = bezierStart.lerp(bezierEnd, ease);

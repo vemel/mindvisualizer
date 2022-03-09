@@ -14,6 +14,10 @@ export default class BackCanvas {
     this.context = this.canvas.getContext("2d");
   }
 
+  init(): void {
+    this.canvas.height = (window.innerHeight * this.canvas.width) / window.innerWidth;
+  }
+
   getLineHeights(lineMeasures: Array<TextMetrics>): Array<number> {
     return lineMeasures.map(
       (lineMeasure, index) => {
@@ -97,7 +101,6 @@ export default class BackCanvas {
       const color = new Color(...data.slice(i, i + 3), data[i + 3] / 255.0);
       if (color.isTransparent()) continue;
       result.set(coords.toString(), {
-        localCoords: new Coords(coords.x * this.canvas.width, coords.y * this.canvas.height),
         coords,
         color,
       });

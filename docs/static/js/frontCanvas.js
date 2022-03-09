@@ -1,4 +1,4 @@
-import { randInt, choice } from "./vectors.js";
+import { choice } from "./vectors.js";
 import Thought from "./thought.js";
 import Color from "./color.js";
 import Coords from "./coords.js";
@@ -16,16 +16,13 @@ export default class FrontCanvas {
         this.coordsKeys = [];
     }
     init() {
-        this.canvas.height =
-            (window.innerHeight * this.canvas.width) / window.innerWidth;
+        this.canvas.height = (window.innerHeight * this.canvas.width) / window.innerWidth;
     }
     createThought(position) {
-        const thought = new Thought({
-            position,
-            speed: (15.0 + Math.random() * 10.0) * this.speed,
-        });
+        const thought = new Thought(position, (15.0 + Math.random() * 10.0) * this.speed);
         this.thoughts.push(thought);
         this.moveThought(thought, 1.0 / this.speed);
+        thought.start.color = thought.end.color;
         return thought;
     }
     getCursorPosition(event) {
@@ -92,44 +89,54 @@ export default class FrontCanvas {
     }
     registerEventListeners() {
         let isDrawing = false;
-        const _this = this;
-        this.canvas.addEventListener("mousedown", function (event) {
+        let resizedFinished;
+        window.addEventListener('resize', () => {
+            const newHeight = (window.innerHeight * this.canvas.width) / window.innerWidth;
+            const coef = newHeight / this.canvas.height;
+            this.thoughts.forEach(thought => {
+                thought.start.coords = thought.start.coords.resize(1.0, coef);
+                thought.end.coords = thought.end.coords.resize(1.0, coef);
+                thought.position = thought.position.resize(1.0, coef);
+            });
+            this.canvas.height = newHeight;
+        });
+        this.canvas.addEventListener("mousedown", event => {
             isDrawing = true;
-            _this.disturbThoughts(event);
-            _this.generateThoughts({
+            this.disturbThoughts(event);
+            this.generateThoughts({
                 event,
                 chance: 0.5,
-                particles: Math.floor(10 * _this.speed),
+                particles: Math.floor(10 * this.speed),
             });
         });
-        this.canvas.addEventListener("mouseup", function () {
+        this.canvas.addEventListener("mouseup", () => {
             isDrawing = false;
         });
-        this.canvas.addEventListener("mousemove", function (event) {
+        this.canvas.addEventListener("mousemove", event => {
             if (!isDrawing)
                 return;
-            _this.generateThoughts({
+            this.generateThoughts({
                 event,
                 chance: 0.03,
-                particles: Math.floor(10 * _this.speed),
+                particles: Math.floor(10 * this.speed),
             });
         });
-        this.canvas.addEventListener("touchstart", function (event) {
+        this.canvas.addEventListener("touchstart", event => {
             for (const touchEvent of event.changedTouches) {
-                _this.disturbThoughts(touchEvent);
-                _this.generateThoughts({
+                this.disturbThoughts(touchEvent);
+                this.generateThoughts({
                     event: touchEvent,
                     chance: 0.5,
-                    particles: Math.floor(10 * _this.speed),
+                    particles: Math.floor(10 * this.speed),
                 });
             }
         });
-        this.canvas.addEventListener("touchmove", (event) => {
+        this.canvas.addEventListener("touchmove", event => {
             for (const touchEvent of event.changedTouches) {
-                _this.generateThoughts({
+                this.generateThoughts({
                     event: touchEvent,
                     chance: 0.03,
-                    particles: Math.floor(10 * _this.speed),
+                    particles: Math.floor(10 * this.speed),
                 });
             }
         }, false);
@@ -137,7 +144,8 @@ export default class FrontCanvas {
     updateDemo() {
         // if (this.thoughts.length >= this.maxThoughts) return;
         const center = new Coords(window.innerWidth / 2, window.innerHeight / 2);
-        const start = new Coords(window.innerWidth / 2 - window.innerHeight * 0.4, window.innerHeight / 2);
+        const radius = Math.min(window.innerHeight, window.innerWidth) * 0.4;
+        const start = new Coords(window.innerWidth / 2 - radius, window.innerHeight / 2);
         const angle = ((Date.now() - this.created.getTime()) / 1000) * Math.PI;
         const emitter = start.rotate(center, angle);
         this.generateThoughts({
@@ -152,8 +160,7 @@ export default class FrontCanvas {
     setCoordsData(coordsData) {
         this.coordsData.clear();
         for (const data of coordsData.values()) {
-            const localCoords = new Coords(data.coords.x * this.canvas.width, data.coords.y * this.canvas.height);
-            this.coordsData.set(localCoords.toString(), Object.assign(Object.assign({}, data), { localCoords }));
+            this.coordsData.set(data.coords.toString(), data);
         }
         this.coordsKeys = [...this.coordsData.keys()];
         this.coordsUpdated = new Date();
@@ -162,10 +169,11 @@ export default class FrontCanvas {
         const coordsKey = this.pickRandomCoordsKey();
         const coordsData = this.coordsData.get(coordsKey) || {
             color: new Color().random(),
-            localCoords: new Coords(randInt(0, this.canvas.width), randInt(0, this.canvas.height))
+            coords: new Coords(Math.random(), Math.random())
         };
+        const localCoords = new Coords(coordsData.coords.x * this.canvas.width, coordsData.coords.y * this.canvas.height);
         thought.move({
-            coords: coordsData.localCoords,
+            coords: localCoords,
             color: coordsData.color,
             delay,
         });

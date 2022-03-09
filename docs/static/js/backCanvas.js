@@ -8,6 +8,9 @@ export default class BackCanvas {
         this.canvas = document.getElementById("back");
         this.context = this.canvas.getContext("2d");
     }
+    init() {
+        this.canvas.height = (window.innerHeight * this.canvas.width) / window.innerWidth;
+    }
     getLineHeights(lineMeasures) {
         return lineMeasures.map((lineMeasure, index) => {
             const height = lineMeasure.actualBoundingBoxAscent + lineMeasure.actualBoundingBoxDescent;
@@ -66,7 +69,6 @@ export default class BackCanvas {
             if (color.isTransparent())
                 continue;
             result.set(coords.toString(), {
-                localCoords: new Coords(coords.x * this.canvas.width, coords.y * this.canvas.height),
                 coords,
                 color,
             });
