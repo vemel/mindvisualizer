@@ -19,8 +19,7 @@ export default class Thought {
     this.position = position;
     this.start = position;
     this.random = Math.random();
-    this.angle =
-      (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 0.5 + 0.25) * Math.PI;
+    this.angle = (Math.random() - 0.5) * 2 * Math.PI;
     this.speed = speed;
     this.created = new Date();
     this.died = null;
@@ -124,11 +123,11 @@ export default class Thought {
     }
     const ease = easeInOutQuad(divideNorm(elapsed, totalSeconds));
     const bezierStart = this.start.lerp(
-      this.start.rotate(this.end, this.angle),
+      this.start.rotate(this.end, this.angle).scale(1.5, this.start),
       ease
     );
     const bezierEnd = this.end.lerp(
-      this.end.rotate(this.start, -this.angle),
+      this.end.rotate(this.start, -this.angle).scale(1.5, this.start),
       1.0 - ease
     );
     this.position = bezierStart.lerp(bezierEnd, ease);

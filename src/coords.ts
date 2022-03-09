@@ -20,6 +20,13 @@ export default class Coords {
     );
   }
 
+  scale(mult: number, coords: Coords): Coords {
+    return new Coords(
+      coords.x + (this.x - coords.x) * mult,
+      coords.y + (this.y - coords.y) * mult
+    );
+  }
+
   rotate(center: Coords, angle: number): Coords {
     const length = this.distance(center);
     const origAngle = Math.atan2(this.y - center.y, this.x - center.x);
