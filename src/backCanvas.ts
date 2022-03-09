@@ -7,6 +7,7 @@ export default class BackCanvas {
   font = "Calibri";
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
+  lineHeight: number = 1.5;
 
   constructor() {
     this.canvas = <HTMLCanvasElement>document.getElementById("back");
@@ -17,10 +18,17 @@ export default class BackCanvas {
     let fontSize = 100;
     while (fontSize > 23) {
       this.context.font = `${fontSize}px ${this.font}`;
-      const lineFits = lines.every(
-        (line) => this.context.measureText(line).width < this.canvas.width - 40
+      const lineMeasures = lines.map((line) => this.context.measureText(line));
+      const lineFitsHor = lineMeasures.every(
+        (lineMeasure) => lineMeasure.width < this.canvas.width - 40
       );
-      if (lineFits) break;
+      const totalHeight = sum(
+        lineMeasures.map(
+          (lineMeasure) => lineMeasure.actualBoundingBoxAscent * this.lineHeight
+        )
+      );
+      const lineFitsVer = totalHeight < this.canvas.height - 60;
+      if (lineFitsHor && lineFitsVer) break;
       fontSize--;
     }
     return fontSize;
@@ -48,7 +56,9 @@ export default class BackCanvas {
     this.context.fillStyle = this.getTextGradient();
     this.context.font = `${this.getFontSize(lines)}px ${this.font}`;
     const lineHeights = lines.map((line) =>
-      Math.floor(this.context.measureText(line).actualBoundingBoxAscent * 1.3)
+      Math.floor(
+        this.context.measureText(line).actualBoundingBoxAscent * this.lineHeight
+      )
     );
 
     lines.forEach((line, index) => {

@@ -4,6 +4,7 @@ import Coords from "./coords.js";
 export default class BackCanvas {
     constructor() {
         this.font = "Calibri";
+        this.lineHeight = 1.5;
         this.canvas = document.getElementById("back");
         this.context = this.canvas.getContext("2d");
     }
@@ -11,8 +12,11 @@ export default class BackCanvas {
         let fontSize = 100;
         while (fontSize > 23) {
             this.context.font = `${fontSize}px ${this.font}`;
-            const lineFits = lines.every((line) => this.context.measureText(line).width < this.canvas.width - 40);
-            if (lineFits)
+            const lineMeasures = lines.map((line) => this.context.measureText(line));
+            const lineFitsHor = lineMeasures.every((lineMeasure) => lineMeasure.width < this.canvas.width - 40);
+            const totalHeight = sum(lineMeasures.map((lineMeasure) => lineMeasure.actualBoundingBoxAscent * this.lineHeight));
+            const lineFitsVer = totalHeight < this.canvas.height - 60;
+            if (lineFitsHor && lineFitsVer)
                 break;
             fontSize--;
         }
@@ -33,7 +37,7 @@ export default class BackCanvas {
         console.log("Rendering", lines);
         this.context.fillStyle = this.getTextGradient();
         this.context.font = `${this.getFontSize(lines)}px ${this.font}`;
-        const lineHeights = lines.map((line) => Math.floor(this.context.measureText(line).actualBoundingBoxAscent * 1.3));
+        const lineHeights = lines.map((line) => Math.floor(this.context.measureText(line).actualBoundingBoxAscent * this.lineHeight));
         lines.forEach((line, index) => {
             this.context.fillText(line, this.canvas.width / 2, this.canvas.height / 2 +
                 lineHeights[index] -
