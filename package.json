@@ -9,7 +9,8 @@
     },
     "scripts": {
         "start": "node ./server.js",
-        "dev": "tsc-watch"
+        "dev": "tsc-watch",
+        "format": "prettier -w src"
     },
     "devDependencies": {
         "prettier": "^2.5.1"
