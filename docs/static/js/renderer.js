@@ -72,8 +72,11 @@ export default class Renderer {
         const text = this.iterator.next();
         this.backCanvas.clear();
         this.backCanvas.drawText(text);
-        const coordsData = this.backCanvas.getCoords();
-        this.frontCanvas.setCoordsData(coordsData);
+        const getCoordsWorker = this.backCanvas.getCoordsWorker();
+        getCoordsWorker.onmessage = (event) => {
+            const data = event.data;
+            this.frontCanvas.setCoordsData(data);
+        };
     }
     update() {
         if (!this.shouldUpdate())

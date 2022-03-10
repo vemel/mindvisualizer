@@ -20,7 +20,7 @@ export default class Coords {
     );
   }
 
-  scale(mult: number, coords: Coords): Coords {
+  scaleTo(mult: number, coords: Coords): Coords {
     return new Coords(
       coords.x + (this.x - coords.x) * mult,
       coords.y + (this.y - coords.y) * mult
@@ -37,15 +37,7 @@ export default class Coords {
     );
   }
 
-  equal(coords: Coords): boolean {
-    return this.x === coords.x && this.y === coords.y;
-  }
-
-  toString(): string {
-    return `${this.x.toFixed(6)},${this.y.toFixed(6)}`;
-  }
-
-  resize(xCoef: number, yCoef: number): Coords {
+  scale(xCoef: number, yCoef: number): Coords {
     return new Coords(this.x * xCoef, this.y * yCoef)
   }
 }

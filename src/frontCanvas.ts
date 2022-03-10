@@ -2,7 +2,7 @@ import { randInt, choice } from "./vectors.js";
 import Thought from "./thought.js";
 import Color from "./color.js";
 import Coords from "./coords.js";
-import { ICoordsData, IClickEvent } from "./interfaces.js";
+import { ICoordsData, IClickEvent, IRawCoordsData } from "./interfaces.js";
 
 export default class FrontCanvas {
   maxThoughts = 5000;
@@ -13,8 +13,7 @@ export default class FrontCanvas {
   thoughts: Array<Thought>;
   speed: number;
   demo: boolean;
-  coordsData: Map<string, ICoordsData>;
-  coordsKeys: Array<string>;
+  coordsData: Array<IRawCoordsData>;
 
   constructor({ speed = 1.0, demo = false }: { speed: number; demo: boolean }) {
     this.canvas = <HTMLCanvasElement>document.getElementById("front");
@@ -24,8 +23,7 @@ export default class FrontCanvas {
     this.thoughts = [];
     this.speed = speed;
     this.demo = demo;
-    this.coordsData = new Map();
-    this.coordsKeys = [];
+    this.coordsData = [];
   }
 
   init(): void {
@@ -128,9 +126,9 @@ export default class FrontCanvas {
       const newHeight = (window.innerHeight * this.canvas.width) / window.innerWidth;
       const coef = newHeight / this.canvas.height
       this.thoughts.forEach(thought => {
-        thought.start.coords = thought.start.coords.resize(1.0, coef)
-        thought.end.coords = thought.end.coords.resize(1.0, coef)
-        thought.position = thought.position.resize(1.0, coef)
+        thought.start.coords = thought.start.coords.scale(1.0, coef)
+        thought.end.coords = thought.end.coords.scale(1.0, coef)
+        thought.position = thought.position.scale(1.0, coef)
       })
       this.canvas.height = newHeight
     });
@@ -202,21 +200,27 @@ export default class FrontCanvas {
     });
   }
 
-  setCoordsData(coordsData: Map<string, ICoordsData>): void {
-    this.coordsData.clear();
-    for (const data of coordsData.values()) {
-      this.coordsData.set(data.coords.toString(), data);
-    }
-    this.coordsKeys = [...this.coordsData.keys()];
+  setCoordsData(coordsData: Array<IRawCoordsData>): void {
+    this.coordsData = coordsData;
     this.coordsUpdated = new Date();
   }
 
-  moveThought(thought: Thought, delay: number = 0.0): void {
-    const coordsKey = this.pickRandomCoordsKey();
-    const coordsData = this.coordsData.get(coordsKey) || {
-      color: new Color().random(),
-      coords: new Coords(Math.random(), Math.random())
+  getRandomCoordsData(): ICoordsData {
+    if (!this.coordsData.length) {
+      return {
+        color: new Color().random(),
+        coords: new Coords(Math.random(), Math.random())
+      }
     }
+    const { color, coords } = choice(this.coordsData)
+    return {
+      color: new Color(...color),
+      coords: new Coords(...coords),
+    }
+  }
+
+  moveThought(thought: Thought, delay: number = 0.0): void {
+    const coordsData = this.getRandomCoordsData();
     const localCoords = new Coords(
       coordsData.coords.x * this.canvas.width,
       coordsData.coords.y * this.canvas.height
@@ -226,10 +230,5 @@ export default class FrontCanvas {
       color: coordsData.color,
       delay,
     });
-  }
-
-  pickRandomCoordsKey(): string {
-    if (!this.coordsKeys.length) return null;
-    return choice(this.coordsKeys);
   }
 }

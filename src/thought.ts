@@ -122,11 +122,11 @@ export default class Thought {
     }
     const ease = easeInOutQuad(divideNorm(elapsed, totalSeconds));
     const bezierStart = this.start.coords.lerp(
-      this.start.coords.rotate(this.end.coords, this.angle).scale(1.5, this.start.coords),
+      this.start.coords.rotate(this.end.coords, this.angle).scaleTo(1.5, this.start.coords),
       ease
     );
     const bezierEnd = this.end.coords.lerp(
-      this.end.coords.rotate(this.start.coords, -this.angle).scale(1.5, this.start.coords),
+      this.end.coords.rotate(this.start.coords, -this.angle).scaleTo(1.5, this.start.coords),
       1.0 - ease
     );
     this.position = bezierStart.lerp(bezierEnd, ease);

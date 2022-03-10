@@ -10,3 +10,8 @@ export interface IClickEvent {
   clientX: number;
   clientY: number;
 }
+
+export interface IRawCoordsData {
+  coords: [number, number];
+  color: [number, number, number, number];
+}

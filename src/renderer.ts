@@ -1,5 +1,8 @@
 import BackCanvas from "./backCanvas.js";
 import FrontCanvas from "./frontCanvas.js";
+import { ICoordsData, IRawCoordsData } from "./interfaces.js";
+import Color from "./color.js";
+import Coords from "./coords.js";
 
 class OrderedIterator<T> {
   readonly items: Array<T>;
@@ -106,8 +109,11 @@ export default class Renderer {
     const text = this.iterator.next();
     this.backCanvas.clear();
     this.backCanvas.drawText(text);
-    const coordsData = this.backCanvas.getCoords();
-    this.frontCanvas.setCoordsData(coordsData);
+    const getCoordsWorker = this.backCanvas.getCoordsWorker();
+    getCoordsWorker.onmessage = (event) => {
+      const data = event.data as Array<IRawCoordsData>
+      this.frontCanvas.setCoordsData(data);
+    }
   }
 
   update(): void {

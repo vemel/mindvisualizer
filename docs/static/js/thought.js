@@ -87,8 +87,8 @@ export default class Thought {
             return;
         }
         const ease = easeInOutQuad(divideNorm(elapsed, totalSeconds));
-        const bezierStart = this.start.coords.lerp(this.start.coords.rotate(this.end.coords, this.angle).scale(1.5, this.start.coords), ease);
-        const bezierEnd = this.end.coords.lerp(this.end.coords.rotate(this.start.coords, -this.angle).scale(1.5, this.start.coords), 1.0 - ease);
+        const bezierStart = this.start.coords.lerp(this.start.coords.rotate(this.end.coords, this.angle).scaleTo(1.5, this.start.coords), ease);
+        const bezierEnd = this.end.coords.lerp(this.end.coords.rotate(this.start.coords, -this.angle).scaleTo(1.5, this.start.coords), 1.0 - ease);
         this.position = bezierStart.lerp(bezierEnd, ease);
     }
     draw(context) {

@@ -1,6 +1,4 @@
 import { randInt, sum } from "./vectors.js";
-import Color from "./color.js";
-import Coords from "./coords.js";
 export default class BackCanvas {
     constructor() {
         this.font = "Ubuntu";
@@ -59,20 +57,12 @@ export default class BackCanvas {
     clear() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-    getCoords() {
-        const imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
-        const data = imageData.data;
-        const result = new Map();
-        for (let i = 0; i < data.length; i += 4) {
-            const coords = new Coords(((i / 4) % this.canvas.width) / this.canvas.width, i / 4 / this.canvas.width / this.canvas.height);
-            const color = new Color(...data.slice(i, i + 3), data[i + 3] / 255.0);
-            if (color.isTransparent())
-                continue;
-            result.set(coords.toString(), {
-                coords,
-                color,
-            });
-        }
-        return result;
+    getCoordsWorker() {
+        const canvas = document.getElementById("back");
+        const context = canvas.getContext("2d");
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const worker = new Worker("static/js/getCoordsWorker.js");
+        worker.postMessage({ imageData, width: this.canvas.width, height: this.canvas.height });
+        return worker;
     }
 }
