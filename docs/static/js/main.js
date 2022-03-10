@@ -59,6 +59,7 @@ const main = () => {
     updateOpts();
     const backCanvas = new BackCanvas();
     backCanvas.init();
+    backCanvas.registerEventListeners();
     const frontCanvas = new FrontCanvas({
         speed: OPTS.speed,
         demo: OPTS.demo,

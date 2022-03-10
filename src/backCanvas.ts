@@ -92,4 +92,10 @@ export default class BackCanvas {
     worker.postMessage({ imageData, width: this.canvas.width, height: this.canvas.height })
     return worker
   }
+
+  registerEventListeners(): void {
+    window.addEventListener('resize', () => {
+      this.canvas.height = (window.innerHeight * this.canvas.width) / window.innerWidth;
+    });
+  }
 }

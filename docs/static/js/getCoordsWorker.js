@@ -15,5 +15,6 @@ self.onmessage = (message) => {
             color,
         });
     }
+    console.log(result.length);
     postMessage(result);
 };

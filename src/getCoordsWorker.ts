@@ -19,5 +19,6 @@ self.onmessage = (message: any): void => {
       color,
     });
   }
+  console.log(result.length)
   postMessage(result);
 }

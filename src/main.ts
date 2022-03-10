@@ -61,6 +61,7 @@ const main = () => {
 
   const backCanvas = new BackCanvas();
   backCanvas.init();
+  backCanvas.registerEventListeners();
 
   const frontCanvas = new FrontCanvas({
     speed: OPTS.speed,

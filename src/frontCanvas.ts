@@ -119,16 +119,21 @@ export default class FrontCanvas {
     }
   }
 
+  scaleCoords(coords: Coords, newHeight: number, oldHeight: number): Coords {
+    const yOffset = coords.y - oldHeight / 2
+    return new Coords(coords.x, newHeight / 2 + yOffset)
+  }
+
   registerEventListeners(): void {
     let isDrawing = false;
     let resizedFinished: number;
     window.addEventListener('resize', () => {
       const newHeight = (window.innerHeight * this.canvas.width) / window.innerWidth;
-      const coef = newHeight / this.canvas.height
+      const oldHeight = this.canvas.height
       this.thoughts.forEach(thought => {
-        thought.start.coords = thought.start.coords.scale(1.0, coef)
-        thought.end.coords = thought.end.coords.scale(1.0, coef)
-        thought.position = thought.position.scale(1.0, coef)
+        thought.start.coords = this.scaleCoords(thought.start.coords, newHeight, oldHeight)
+        thought.end.coords = this.scaleCoords(thought.end.coords, newHeight, oldHeight)
+        thought.position = this.scaleCoords(thought.position, newHeight, oldHeight)
       })
       this.canvas.height = newHeight
     });
