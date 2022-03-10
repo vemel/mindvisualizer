@@ -1,17 +1,19 @@
-import { randInt, sum } from "./vectors.js";
+import { randInt, sum } from './vectors.js';
 export default class BackCanvas {
     constructor() {
-        this.font = "Ubuntu";
+        this.font = 'Ubuntu';
         this.lineHeight = 1.2;
-        this.canvas = document.getElementById("back");
-        this.context = this.canvas.getContext("2d");
+        this.canvas = document.getElementById('back');
+        this.context = this.canvas.getContext('2d');
     }
     init() {
-        this.canvas.height = (window.innerHeight * this.canvas.width) / window.innerWidth;
+        this.canvas.height =
+            (window.innerHeight * this.canvas.width) / window.innerWidth;
     }
     getLineHeights(lineMeasures) {
         return lineMeasures.map((lineMeasure, index) => {
-            const height = lineMeasure.actualBoundingBoxAscent + lineMeasure.actualBoundingBoxDescent;
+            const height = lineMeasure.actualBoundingBoxAscent +
+                lineMeasure.actualBoundingBoxDescent;
             return (index > 0 ? this.lineHeight : 1.0) * height;
         });
     }
@@ -39,18 +41,21 @@ export default class BackCanvas {
         return gradient;
     }
     drawText(text) {
-        this.context.textAlign = "center";
-        const lines = text.split(",");
-        console.log("Rendering", lines);
+        this.context.textAlign = 'center';
+        const lines = text.split(',');
+        console.log('Rendering', lines);
         this.context.fillStyle = this.getTextGradient();
         this.context.font = `bold ${this.getFontSize(lines)}px ${this.font}`;
-        const lineMeasures = lines.map(line => this.context.measureText(line));
+        const lineMeasures = lines.map((line) => this.context.measureText(line));
         const lineHeights = this.getLineHeights(lineMeasures);
         lines.forEach((line, index) => {
             const lineMeasure = lineMeasures[index];
             const lineHeight = lineHeights[index];
             const lineOffset = lineHeight - lineMeasure.actualBoundingBoxDescent;
-            const y = this.canvas.height / 2 + lineOffset - sum(lineHeights) / 2 + sum(lineHeights.slice(0, index));
+            const y = this.canvas.height / 2 +
+                lineOffset -
+                sum(lineHeights) / 2 +
+                sum(lineHeights.slice(0, index));
             this.context.fillText(line, this.canvas.width / 2, y);
         });
     }
@@ -58,16 +63,21 @@ export default class BackCanvas {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
     getCoordsWorker() {
-        const canvas = document.getElementById("back");
-        const context = canvas.getContext("2d");
+        const canvas = document.getElementById('back');
+        const context = canvas.getContext('2d');
         const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        const worker = new Worker("static/js/getCoordsWorker.js");
-        worker.postMessage({ imageData, width: this.canvas.width, height: this.canvas.height });
+        const worker = new Worker('static/js/getCoordsWorker.js');
+        worker.postMessage({
+            imageData,
+            width: this.canvas.width,
+            height: this.canvas.height,
+        });
         return worker;
     }
     registerEventListeners() {
         window.addEventListener('resize', () => {
-            this.canvas.height = (window.innerHeight * this.canvas.width) / window.innerWidth;
+            this.canvas.height =
+                (window.innerHeight * this.canvas.width) / window.innerWidth;
         });
     }
 }

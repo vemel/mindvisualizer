@@ -1,15 +1,15 @@
-import { easeInOutQuad, lerp, divideNorm } from "./vectors.js";
-import Color from "./color.js";
+import { easeInOutQuad, lerp, divideNorm } from './vectors.js';
+import Color from './color.js';
 export default class Thought {
     constructor(position, speed) {
         this.position = position;
         this.start = {
             coords: position,
-            color: new Color().random()
+            color: new Color().random(),
         };
         this.end = {
             coords: position,
-            color: new Color().random()
+            color: new Color().random(),
         };
         this.random = Math.random();
         this.angle = (Math.random() - 0.5) * 2 * Math.PI;
@@ -87,8 +87,12 @@ export default class Thought {
             return;
         }
         const ease = easeInOutQuad(divideNorm(elapsed, totalSeconds));
-        const bezierStart = this.start.coords.lerp(this.start.coords.rotate(this.end.coords, this.angle).scaleTo(1.5, this.start.coords), ease);
-        const bezierEnd = this.end.coords.lerp(this.end.coords.rotate(this.start.coords, -this.angle).scaleTo(1.5, this.start.coords), 1.0 - ease);
+        const bezierStart = this.start.coords.lerp(this.start.coords
+            .rotate(this.end.coords, this.angle)
+            .scaleTo(1.5, this.start.coords), ease);
+        const bezierEnd = this.end.coords.lerp(this.end.coords
+            .rotate(this.start.coords, -this.angle)
+            .scaleTo(1.5, this.start.coords), 1.0 - ease);
         this.position = bezierStart.lerp(bezierEnd, ease);
     }
     draw(context) {

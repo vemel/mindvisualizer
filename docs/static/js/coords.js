@@ -1,4 +1,4 @@
-import { lerp } from "./vectors.js";
+import { lerp } from './vectors.js';
 export default class Coords {
     constructor(x, y) {
         this.x = x;

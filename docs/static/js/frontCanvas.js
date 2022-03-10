@@ -1,12 +1,12 @@
-import { choice } from "./vectors.js";
-import Thought from "./thought.js";
-import Color from "./color.js";
-import Coords from "./coords.js";
+import { choice } from './vectors.js';
+import Thought from './thought.js';
+import Color from './color.js';
+import Coords from './coords.js';
 export default class FrontCanvas {
     constructor({ speed = 1.0, demo = false }) {
         this.maxThoughts = 5000;
-        this.canvas = document.getElementById("front");
-        this.context = this.canvas.getContext("2d");
+        this.canvas = document.getElementById('front');
+        this.context = this.canvas.getContext('2d');
         this.created = new Date();
         this.coordsUpdated = new Date();
         this.thoughts = [];
@@ -15,7 +15,8 @@ export default class FrontCanvas {
         this.coordsData = [];
     }
     init() {
-        this.canvas.height = (window.innerHeight * this.canvas.width) / window.innerWidth;
+        this.canvas.height =
+            (window.innerHeight * this.canvas.width) / window.innerWidth;
     }
     createThought(position) {
         const thought = new Thought(position, (15.0 + Math.random() * 10.0) * this.speed);
@@ -96,14 +97,14 @@ export default class FrontCanvas {
         window.addEventListener('resize', () => {
             const newHeight = (window.innerHeight * this.canvas.width) / window.innerWidth;
             const oldHeight = this.canvas.height;
-            this.thoughts.forEach(thought => {
+            this.thoughts.forEach((thought) => {
                 thought.start.coords = this.scaleCoords(thought.start.coords, newHeight, oldHeight);
                 thought.end.coords = this.scaleCoords(thought.end.coords, newHeight, oldHeight);
                 thought.position = this.scaleCoords(thought.position, newHeight, oldHeight);
             });
             this.canvas.height = newHeight;
         });
-        this.canvas.addEventListener("mousedown", event => {
+        this.canvas.addEventListener('mousedown', (event) => {
             isDrawing = true;
             this.disturbThoughts(event);
             this.generateThoughts({
@@ -112,10 +113,10 @@ export default class FrontCanvas {
                 particles: Math.floor(10 * this.speed),
             });
         });
-        this.canvas.addEventListener("mouseup", () => {
+        this.canvas.addEventListener('mouseup', () => {
             isDrawing = false;
         });
-        this.canvas.addEventListener("mousemove", event => {
+        this.canvas.addEventListener('mousemove', (event) => {
             if (!isDrawing)
                 return;
             this.generateThoughts({
@@ -124,7 +125,7 @@ export default class FrontCanvas {
                 particles: Math.floor(10 * this.speed),
             });
         });
-        this.canvas.addEventListener("touchstart", event => {
+        this.canvas.addEventListener('touchstart', (event) => {
             for (const touchEvent of event.changedTouches) {
                 this.disturbThoughts(touchEvent);
                 this.generateThoughts({
@@ -134,7 +135,7 @@ export default class FrontCanvas {
                 });
             }
         });
-        this.canvas.addEventListener("touchmove", event => {
+        this.canvas.addEventListener('touchmove', (event) => {
             for (const touchEvent of event.changedTouches) {
                 this.generateThoughts({
                     event: touchEvent,
@@ -168,7 +169,7 @@ export default class FrontCanvas {
         if (!this.coordsData.length) {
             return {
                 color: new Color().random(),
-                coords: new Coords(Math.random(), Math.random())
+                coords: new Coords(Math.random(), Math.random()),
             };
         }
         const { color, coords } = choice(this.coordsData);
