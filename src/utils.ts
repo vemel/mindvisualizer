@@ -21,3 +21,14 @@ export function sum(items: Array<number>): number {
 export function easeInOutQuad(t: number): number {
   return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
 }
+
+export function sample<T>(items: Array<T>, count: number): Array<T> {
+  const result = []
+  count = Math.min(count, items.length)
+  while (result.length < count) {
+    const item = choice(items)
+    if (result.includes(item)) continue
+    result.push(item)
+  }
+  return result
+}
