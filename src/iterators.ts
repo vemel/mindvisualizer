@@ -13,7 +13,7 @@ export class OrderedIterator<T> {
 }
 
 export class ShuffleIterator<T> extends OrderedIterator<T> {
-  indexes: Array<number>
+  private indexes: Array<number>
   constructor(items: Array<T>) {
     super(items)
     this.indexes = this.getShuffledIndexes()

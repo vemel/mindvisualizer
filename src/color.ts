@@ -1,4 +1,4 @@
-import { randInt, lerp, divideNorm } from './vectors.js'
+import { randInt, lerp, divideNorm } from './utils.js'
 
 export default class Color {
   readonly r: number

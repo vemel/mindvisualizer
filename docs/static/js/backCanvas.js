@@ -1,4 +1,4 @@
-import { randInt, sum } from './vectors.js';
+import { randInt, sum } from './utils.js';
 export default class BackCanvas {
     constructor() {
         this.font = 'Ubuntu';

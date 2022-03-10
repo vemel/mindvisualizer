@@ -1,4 +1,4 @@
-import { lerp } from './vectors.js';
+import { lerp } from './utils.js';
 export default class Coords {
     constructor(x, y) {
         this.x = x;
@@ -18,8 +18,5 @@ export default class Coords {
         const origAngle = Math.atan2(this.y - center.y, this.x - center.x);
         const newAngle = origAngle + angle;
         return new Coords(center.x + length * Math.sin(newAngle), center.y + length * Math.cos(newAngle));
-    }
-    scale(xCoef, yCoef) {
-        return new Coords(this.x * xCoef, this.y * yCoef);
     }
 }

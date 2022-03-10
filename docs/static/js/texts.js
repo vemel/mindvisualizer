@@ -1,4 +1,4 @@
-import * as vectors from './vectors.js';
+import { choice } from './utils.js';
 const EMOJIS = [
     ...'⭐🌹🌷👉👌💦🎁🥰✌💗🐈🍆👍🧁💊🔥🎄🥒🥕🥐🎈💡🗝️🎷🎮🏅🏆⚓🚕🛖✈️😆🥥🍒💩🤡',
     ...'💍🐀💃🏻💅🥺🌈🐟👑✊🚑🚒🗿🔮💰❌🦽🏴‍☠️☝️🎉🥳🪅👮🤰🦄🐴🖕',
@@ -30,6 +30,6 @@ export default {
         '💎energy💰',
     ],
     emoji: [
-        ...new Set(Array.from(Array(500).keys()).map(() => `${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}${vectors.choice(EMOJIS)}`)),
+        ...new Set(Array.from(Array(500).keys()).map(() => `${choice(EMOJIS)}${choice(EMOJIS)}${choice(EMOJIS)}`)),
     ],
 };

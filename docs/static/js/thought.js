@@ -1,4 +1,4 @@
-import { easeInOutQuad, lerp, divideNorm } from './vectors.js';
+import { easeInOutQuad, lerp, divideNorm } from './utils.js';
 import Color from './color.js';
 export default class Thought {
     constructor(position, speed) {
@@ -12,7 +12,7 @@ export default class Thought {
             color: new Color().random(),
         };
         this.random = Math.random();
-        this.angle = (Math.random() - 0.5) * 2 * Math.PI;
+        this.angle = (this.random - 0.5) * 2 * Math.PI;
         this.speed = speed;
         this.created = new Date();
         this.died = null;
@@ -49,7 +49,7 @@ export default class Thought {
         return bornMod * dieMod * size;
     }
     die() {
-        this.died = new Date(Date.now() + 500 + Math.random() * 2000);
+        this.died = new Date(Date.now() + 500 + this.random * 2000);
     }
     getColor() {
         const t = divideNorm(this.getElapsedSeconds(), this.getTravelSeconds());

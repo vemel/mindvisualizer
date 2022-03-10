@@ -1,4 +1,4 @@
-import { lerp } from './vectors.js'
+import { lerp } from './utils.js'
 
 export default class Coords {
   readonly x: number
@@ -35,9 +35,5 @@ export default class Coords {
       center.x + length * Math.sin(newAngle),
       center.y + length * Math.cos(newAngle)
     )
-  }
-
-  scale(xCoef: number, yCoef: number): Coords {
-    return new Coords(this.x * xCoef, this.y * yCoef)
   }
 }

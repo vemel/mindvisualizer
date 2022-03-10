@@ -1,4 +1,4 @@
-import { choice } from './vectors.js';
+import { choice } from './utils.js';
 import Thought from './thought.js';
 import Color from './color.js';
 import Coords from './coords.js';
