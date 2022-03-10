@@ -1,4 +1,4 @@
-import { sample, randInt } from './utils.js'
+import { sample, choice } from './utils.js'
 
 const EMOJIS = [
   ...'⭐🌹🌷👉👌💦🎁🥰✌💗🐈🍆👍🧁💊🔥🎄🥒🥕🥐🎈💡🗝️🎷🎮🏅🏆⚓🚕🛖✈️😆🥥🍒💩🤡',
@@ -50,7 +50,9 @@ export default {
   ],
   emoji: [
     ...new Set(
-      Array.from(Array(500).keys()).map(() => sample(EMOJIS, 3).join(''))
+      Array.from(Array(500).keys()).map(() =>
+        sample(EMOJIS, choice([2, 3, 3])).join('')
+      )
     ),
   ],
 }

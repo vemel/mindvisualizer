@@ -22,9 +22,9 @@ export default class BackCanvas {
         while (fontSize > 23) {
             this.context.font = `bold ${fontSize}px ${this.font}`;
             const lineMeasures = lines.map((line) => this.context.measureText(line));
-            const lineFitsHor = lineMeasures.every((lineMeasure) => lineMeasure.width < this.canvas.width - 40);
+            const lineFitsHor = lineMeasures.every((lineMeasure) => lineMeasure.width < this.canvas.width * 0.95);
             const totalHeight = sum(this.getLineHeights(lineMeasures));
-            const lineFitsVer = totalHeight < this.canvas.height - 60;
+            const lineFitsVer = totalHeight < this.canvas.height * 0.8;
             if (lineFitsHor && lineFitsVer)
                 break;
             fontSize -= 2;

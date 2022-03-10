@@ -1,4 +1,4 @@
-import { sample } from './utils.js';
+import { sample, choice } from './utils.js';
 const EMOJIS = [
     ...'⭐🌹🌷👉👌💦🎁🥰✌💗🐈🍆👍🧁💊🔥🎄🥒🥕🥐🎈💡🗝️🎷🎮🏅🏆⚓🚕🛖✈️😆🥥🍒💩🤡',
     ...'💍🐀💃🏻💅🥺🌈🐟👑🚑🚒🗿🔮💰❌🦽☝️🎉🥳🪅👮🤰🦄🐴🖕',
@@ -47,6 +47,6 @@ export default {
         '💎energy💰',
     ],
     emoji: [
-        ...new Set(Array.from(Array(500).keys()).map(() => sample(EMOJIS, 3).join(''))),
+        ...new Set(Array.from(Array(500).keys()).map(() => sample(EMOJIS, choice([2, 3, 3])).join(''))),
     ],
 };
