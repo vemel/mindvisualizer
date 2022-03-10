@@ -6,6 +6,7 @@ export class OrderedIterator<T> {
     this.index = 0
   }
   next(): T {
+    if (!this.items.length) return null
     const result = this.items[this.index]
     this.index = (this.index + 1) % this.items.length
     return result
@@ -20,8 +21,9 @@ export class ShuffleIterator<T> extends OrderedIterator<T> {
   }
 
   getShuffledIndexes(): Array<number> {
-    const result = Array.from(Array(this.items.length).keys())
-    for (let index = result.length - 1; index >= 0; index--) {
+    const result = this.items.map((_, i) => i)
+    const reversed = [...result].reverse()
+    for (const index of reversed) {
       const newIndex = Math.floor(Math.random() * index)
       const oldValue = result[index]
       result[index] = result[newIndex]
@@ -31,6 +33,7 @@ export class ShuffleIterator<T> extends OrderedIterator<T> {
   }
 
   next(): T {
+    if (!this.items.length) return null
     if (this.items.length === 1) return this.items[0]
     const itemIndex = this.indexes[this.index]
     this.index++
