@@ -1,7 +1,9 @@
 import { easeInOutQuad, lerp, divideNorm } from './utils.js';
 import Color from './color.js';
-export default class Thought {
+import Timer from './timer.js';
+export default class Thought extends Timer {
     constructor(position, speed) {
+        super(true);
         this.position = position;
         this.start = {
             coords: position,
@@ -13,43 +15,34 @@ export default class Thought {
         };
         this.random = Math.random();
         this.angle = (this.random - 0.5) * 2 * Math.PI;
-        this.speed = speed;
-        this.created = new Date();
-        this.died = null;
-        this.started = null;
-        this.ended = null;
+        this.speed = 15.0 + this.random * 10.0;
+        this.timers.set('started', new Timer(false));
+        this.timers.set('died', new Timer(false));
+        this.timers.set('ended', new Timer(false));
     }
     getTravelSeconds() {
         const distance = this.start.coords.distance(this.end.coords);
         return Math.max(distance / this.speed);
     }
     getEnded() {
-        return new Date(this.started.getTime() + this.getTravelSeconds() * 1000);
+        return this.getTimer('started').value + this.getTravelSeconds();
     }
     getAlpha() {
-        const dieMod = this.died
-            ? lerp(1.0, 0.0, easeInOutQuad(this.getDieLerpT()))
-            : 1.0;
-        const size = 0.4 +
-            Math.sin((Date.now() - this.created.getTime()) / 500 + this.random * 6) *
-                0.2;
+        const dieMod = lerp(1.0, 0.0, easeInOutQuad(this.getDieLerpT()));
+        const size = 0.4 + Math.sin(this.value / 4 + this.random * 6) * 0.2;
         return size * dieMod;
     }
     getDieLerpT() {
-        return 1.0 - divideNorm(this.died.getTime() - Date.now(), 500.0);
+        return divideNorm(this.getTimer('died').value, 2.0);
     }
     getRadius() {
-        const bornMod = Math.min((Date.now() - this.created.getTime()) / 1000, 1.0);
-        const dieMod = this.died
-            ? lerp(1.0, 0.2, easeInOutQuad(this.getDieLerpT()))
-            : 1.0;
-        const size = 6.0 +
-            Math.sin((Date.now() - this.created.getTime()) / 1000 + this.random * 6) *
-                2.0;
+        const bornMod = Math.min(this.value, 1.0);
+        const dieMod = lerp(1.0, 0.2, easeInOutQuad(this.getDieLerpT()));
+        const size = 6.0 + Math.sin(this.value + this.random * 6) * 2.0;
         return bornMod * dieMod * size;
     }
     die() {
-        this.died = new Date(Date.now() + 500 + this.random * 2000);
+        this.getTimer('died').startTimer(this.random * 2.0);
     }
     getColor() {
         const t = divideNorm(this.getElapsedSeconds(), this.getTravelSeconds());
@@ -59,32 +52,34 @@ export default class Thought {
     move({ coords, color, delay, }) {
         this.start.coords = this.position;
         this.end.coords = coords;
-        this.started = new Date(Date.now() + delay * 1000);
         this.start.color = this.end.color;
-        this.ended = this.getEnded();
+        this.getTimer('started').startTimer(delay);
+        this.getTimer('ended').stopTimer();
         this.end.color = color;
     }
     isDying() {
-        return this.died ? true : false;
+        return this.getTimer('died').isStarted();
     }
     isDead() {
-        const now = new Date();
-        return this.died && this.died < now;
+        return this.getDieLerpT() > 0.999;
     }
     getElapsedSeconds() {
-        return (Date.now() - this.started.getTime()) / 1000;
+        return this.getTimer('started').value;
     }
-    update() {
+    update(dt) {
+        if (!super.update(dt))
+            return false;
         if (!this.end)
-            return;
+            return false;
         if (this.isDead())
-            return;
-        const now = new Date();
+            return false;
         const totalSeconds = this.getTravelSeconds();
         const elapsed = this.getElapsedSeconds();
-        if (now > this.ended) {
+        if (this.getTimer('started').value > this.getTravelSeconds()) {
             this.position = this.end.coords;
-            return;
+            if (!this.getTimer('ended').isStarted())
+                this.getTimer('ended').startTimer();
+            return true;
         }
         const ease = easeInOutQuad(divideNorm(elapsed, totalSeconds));
         const bezierStart = this.start.coords.lerp(this.start.coords
@@ -94,6 +89,7 @@ export default class Thought {
             .rotate(this.start.coords, -this.angle)
             .scaleTo(1.5, this.start.coords), 1.0 - ease);
         this.position = bezierStart.lerp(bezierEnd, ease);
+        return true;
     }
     draw(context) {
         if (this.isDead())

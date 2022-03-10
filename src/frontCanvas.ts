@@ -1,29 +1,26 @@
-import { randInt, choice } from './utils.js'
+import { choice, divideNorm } from './utils.js'
 import Thought from './thought.js'
 import Color from './color.js'
 import Coords from './coords.js'
+import Timer from './timer.js'
 import { ICoordsData, IClickEvent, IRawCoordsData } from './interfaces.js'
 
-export default class FrontCanvas {
+export default class FrontCanvas extends Timer {
   maxThoughts = 5000
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D
-  created: Date
-  coordsUpdated: Date
   thoughts: Array<Thought>
-  speed: number
-  demo: boolean
   coordsData: Array<IRawCoordsData>
+  emitterCoords: Map<string, Coords>
 
-  constructor({ speed = 1.0, demo = false }: { speed: number; demo: boolean }) {
+  constructor() {
+    super(true)
     this.canvas = <HTMLCanvasElement>document.getElementById('front')
     this.context = this.canvas.getContext('2d')
-    this.created = new Date()
-    this.coordsUpdated = new Date()
     this.thoughts = []
-    this.speed = speed
-    this.demo = demo
     this.coordsData = []
+    this.emitterCoords = new Map()
+    this.timers.set('coordsUpdated', new Timer(false))
   }
 
   init(): void {
@@ -32,12 +29,9 @@ export default class FrontCanvas {
   }
 
   createThought(position: Coords): Thought {
-    const thought = new Thought(
-      position,
-      (15.0 + Math.random() * 10.0) * this.speed
-    )
+    const thought = new Thought(position, 15.0 + Math.random() * 10.0)
     this.thoughts.push(thought)
-    this.moveThought(thought, 1.0 / this.speed)
+    this.moveThought(thought, 1.0)
     thought.start.color = thought.end.color
     return thought
   }
@@ -54,22 +48,21 @@ export default class FrontCanvas {
   }
 
   generateThoughts({
-    event,
+    coords,
     chance,
-    particles = 10,
+    particles,
   }: {
-    event: IClickEvent
+    coords: Coords
     chance: number
     particles: number
   }): void {
-    const clickPosition = this.getCursorPosition(event)
     for (let i = 0; i < particles; i++) {
       if (Math.random() > chance) continue
-      const radius = 10 * Math.random()
+      const radius = 30 * Math.random()
       const angle = Math.PI * Math.random()
       const position = new Coords(
-        Math.floor(clickPosition.x + radius * Math.sin(angle)),
-        Math.floor(clickPosition.y + radius * Math.cos(angle))
+        Math.floor(coords.x + radius * Math.sin(angle)),
+        Math.floor(coords.y + radius * Math.cos(angle))
       )
       this.createThought(position)
     }
@@ -84,38 +77,53 @@ export default class FrontCanvas {
       })
   }
 
-  disturbThoughts(event: IClickEvent): void {
+  disturbThoughts(coords: Coords): void {
     const radius = 50.0
-    const clickPosition = this.getCursorPosition(event)
     this.thoughts.forEach((thought) => {
-      if (thought.position.distance(clickPosition) < radius) {
+      if (thought.position.distance(coords) < radius) {
         this.moveThought(thought)
       }
     })
   }
 
-  updateThought(thought: Thought): void {
+  updateThought(thought: Thought, dt: number): void {
     if (thought.isDead()) {
       this.thoughts.splice(this.thoughts.indexOf(thought), 1)
       return
     }
-    if (this.shouldMove(thought)) this.moveThought(thought)
-    thought.update()
+    if (this.shouldMove(thought)) this.moveThought(thought, 5.0)
+    thought.update(dt)
     thought.draw(this.context)
   }
 
   shouldMove(thought: Thought): boolean {
-    if (Math.random() < 0.001) return true
-    if (thought.started > this.coordsUpdated) return false
-    return Math.random() < 0.02
+    if (
+      thought.getTimer('started').value > this.getTimer('coordsUpdated').value
+    )
+      return this.dt / 4 > Math.random()
+    if (thought.getTimer('started').value > thought.random * 1200.0) return true
+    if (thought.getTimer('ended').value > thought.random * 120.0) return true
+    return false
   }
 
-  update(): void {
+  update(dt: number): boolean {
+    if (!super.update(dt)) return false
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     this.killOldest()
-    if (this.demo) this.updateDemo()
+    this.updateEmitters()
     for (const thought of this.thoughts) {
-      this.updateThought(thought)
+      this.updateThought(thought, dt)
+    }
+    return true
+  }
+
+  updateEmitters(): void {
+    for (const coords of this.emitterCoords.values()) {
+      this.generateThoughts({
+        coords,
+        chance: 0.2,
+        particles: this.dt * 200,
+      })
     }
   }
 
@@ -151,76 +159,62 @@ export default class FrontCanvas {
       this.canvas.height = newHeight
     })
     this.canvas.addEventListener('mousedown', (event) => {
-      isDrawing = true
-      this.disturbThoughts(event)
-      this.generateThoughts({
-        event,
-        chance: 0.5,
-        particles: Math.floor(10 * this.speed),
-      })
+      const coords = this.getCursorPosition(event)
+      this.disturbThoughts(coords)
+      this.emitterCoords.set('mouse', coords)
     })
     this.canvas.addEventListener('mouseup', () => {
-      isDrawing = false
+      this.emitterCoords.delete('mouse')
     })
 
     this.canvas.addEventListener('mousemove', (event) => {
-      if (!isDrawing) return
-      this.generateThoughts({
-        event,
-        chance: 0.03,
-        particles: Math.floor(10 * this.speed),
-      })
+      if (!this.emitterCoords.has('mouse')) return
+      const coords = this.getCursorPosition(event)
+      this.emitterCoords.set('mouse', coords)
     })
 
     this.canvas.addEventListener('touchstart', (event) => {
       for (const touchEvent of event.changedTouches) {
-        this.disturbThoughts(touchEvent)
-        this.generateThoughts({
-          event: touchEvent,
-          chance: 0.5,
-          particles: Math.floor(10 * this.speed),
-        })
+        const key = `touch${touchEvent.identifier}`
+        const coords = this.getCursorPosition(touchEvent)
+        this.disturbThoughts(coords)
+        this.emitterCoords.set(key, coords)
       }
     })
 
-    this.canvas.addEventListener(
-      'touchmove',
-      (event) => {
-        for (const touchEvent of event.changedTouches) {
-          this.generateThoughts({
-            event: touchEvent,
-            chance: 0.03,
-            particles: Math.floor(10 * this.speed),
-          })
-        }
-      },
-      false
-    )
+    this.canvas.addEventListener('touchmove', (event) => {
+      for (const touchEvent of event.changedTouches) {
+        const key = `touch${touchEvent.identifier}`
+        const coords = this.getCursorPosition(touchEvent)
+        this.emitterCoords.set(key, coords)
+      }
+    })
+
+    this.canvas.addEventListener('touchend', (event) => {
+      for (const touchEvent of event.changedTouches) {
+        const key = `touch${touchEvent.identifier}`
+        this.emitterCoords.delete(key)
+      }
+    })
   }
 
   updateDemo(): void {
     // if (this.thoughts.length >= this.maxThoughts) return;
-    const center = new Coords(window.innerWidth / 2, window.innerHeight / 2)
-    const radius = Math.min(window.innerHeight, window.innerWidth) * 0.4
+    const center = new Coords(this.canvas.width / 2, this.canvas.height / 2)
+    const radius = Math.min(this.canvas.height, this.canvas.width) * 0.4
     const start = new Coords(
       window.innerWidth / 2 - radius,
       window.innerHeight / 2
     )
-    const angle = ((Date.now() - this.created.getTime()) / 1000) * Math.PI
-    const emitter = start.rotate(center, angle)
-    this.generateThoughts({
-      event: {
-        clientX: emitter.x,
-        clientY: emitter.y,
-      },
-      chance: this.speed / 20,
-      particles: 10,
-    })
+    const angle = (this.value / 5) * Math.PI
+
+    const coords = start.rotate(center, angle)
+    this.emitterCoords.set('demo', coords)
   }
 
   setCoordsData(coordsData: Array<IRawCoordsData>): void {
     this.coordsData = coordsData
-    this.coordsUpdated = new Date()
+    this.getTimer('coordsUpdated').startTimer()
   }
 
   getRandomCoordsData(): ICoordsData {
@@ -246,7 +240,7 @@ export default class FrontCanvas {
     thought.move({
       coords: localCoords,
       color: coordsData.color,
-      delay,
+      delay: delay * thought.random,
     })
   }
 }

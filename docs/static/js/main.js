@@ -56,10 +56,7 @@ const main = () => {
     const backCanvas = new BackCanvas();
     backCanvas.init();
     backCanvas.registerEventListeners();
-    const frontCanvas = new FrontCanvas({
-        speed: OPTS.speed,
-        demo: OPTS.demo,
-    });
+    const frontCanvas = new FrontCanvas();
     frontCanvas.init();
     frontCanvas.registerEventListeners();
     const ui = new UI({
@@ -68,16 +65,20 @@ const main = () => {
     });
     ui.registerEventListeners();
     const renderer = new Renderer({
-        speed: OPTS.speed,
         frontCanvas,
         backCanvas,
         shuffle: OPTS.shuffle,
         texts: getTexts(),
     });
+    let started = Date.now();
     setInterval(() => {
-        const now = new Date();
-        renderer.update();
-        frontCanvas.update();
+        const now = Date.now();
+        const dt = ((now - started) / 1000) * OPTS.speed;
+        started = now;
+        renderer.update(dt);
+        frontCanvas.update(dt);
+        if (OPTS.demo)
+            frontCanvas.updateDemo();
         ui.update();
     }, 10);
 };
