@@ -13,19 +13,15 @@ const OPTS = {
 };
 function getTexts() {
     const params = new URLSearchParams(window.location.search);
+    let result = '';
     if (params.get('q')) {
         const encoded = window.btoa(unescape(encodeURIComponent(params.get('q'))));
-        // console.log(params.q, encoded)
-        console.log(`http://localhost:8089/?bq=${encoded}`);
-        localStorage.setItem('mindtext', params.get('q'));
+        console.log(`bq=${encoded}`);
+        result = params.get('q');
     }
     if (params.get('bq')) {
         const decoded = decodeURIComponent(escape(window.atob(params.get('bq'))));
-        localStorage.setItem('mindtext', decoded);
-    }
-    let result = '';
-    if (localStorage.getItem('mindtext')) {
-        result = localStorage.getItem('mindtext');
+        result = decoded;
     }
     if (!result.length) {
         return TEXTS.emoji;
