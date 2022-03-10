@@ -21,16 +21,11 @@ export class ShuffleIterator<T> extends OrderedIterator<T> {
 
   getShuffledIndexes(): Array<number> {
     const result = Array.from(Array(this.items.length).keys())
-    let currentIndex: number = result.length
-    let randomIndex: number = 0
-
-    while (currentIndex != 0) {
-      randomIndex = Math.floor(Math.random() * currentIndex)
-      currentIndex--
-      ;[result[currentIndex], result[randomIndex]] = [
-        result[randomIndex],
-        result[currentIndex],
-      ]
+    for (let index = result.length - 1; index >= 0; index--) {
+      const newIndex = Math.floor(Math.random() * index)
+      const oldValue = result[index]
+      result[index] = result[newIndex]
+      result[newIndex] = oldValue
     }
     return result
   }
