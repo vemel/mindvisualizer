@@ -3,8 +3,9 @@ import BackCanvas from './backCanvas.js'
 import FrontCanvas from './frontCanvas.js'
 import Renderer from './renderer.js'
 import UI from './ui.js'
+import { IOptions } from './interfaces.js'
 
-const OPTS = {
+const options: IOptions = {
   maxThoughts: 2500,
   speed: 2.0,
   shuffle: true,
@@ -36,10 +37,10 @@ function getTexts() {
 
 function updateOpts() {
   const params = new URLSearchParams(window.location.search)
-  if (params.get('demo')) OPTS.demo = params.get('demo') === 'true'
-  if (params.get('speed')) OPTS.speed = Number(params.get('speed'))
-  if (params.get('shuffle')) OPTS.shuffle = params.get('shuffle') === 'true'
-  if (params.get('ui')) OPTS.hideUI = params.get('ui') === 'false'
+  if (params.get('demo')) options.demo = params.get('demo') === 'true'
+  if (params.get('speed')) options.speed = Number(params.get('speed'))
+  if (params.get('shuffle')) options.shuffle = params.get('shuffle') === 'true'
+  if (params.get('ui')) options.hideUI = params.get('ui') === 'false'
 }
 
 function loadFonts() {
@@ -63,27 +64,25 @@ const main = () => {
   frontCanvas.init()
   frontCanvas.registerEventListeners()
 
-  const ui = new UI({
-    show: !OPTS.hideUI,
-    frontCanvas,
-  })
+  const ui = new UI(options, frontCanvas)
+  if (!options.hideUI) ui.showUI()
   ui.registerEventListeners()
 
   const renderer = new Renderer({
     frontCanvas,
     backCanvas,
-    shuffle: OPTS.shuffle,
+    shuffle: options.shuffle,
     texts: getTexts(),
   })
 
   let started = Date.now()
   setInterval(() => {
     const now = Date.now()
-    const dt = ((now - started) / 1000) * OPTS.speed
+    const dt = ((now - started) / 1000) * options.speed
     started = now
     renderer.update(dt)
     frontCanvas.update(dt)
-    if (OPTS.demo) frontCanvas.updateDemo()
+    if (options.demo) frontCanvas.updateDemo()
     ui.update()
   }, 10)
 }

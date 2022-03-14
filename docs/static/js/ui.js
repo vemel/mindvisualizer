@@ -1,19 +1,23 @@
 export default class UI {
-    constructor({ frontCanvas, show, }) {
+    constructor(options, frontCanvas) {
         this.title = document.getElementById('title');
         this.controls = document.getElementById('controls');
+        this.speed = document.getElementById('speed');
         this.frontCanvas = frontCanvas;
-        this.show = show;
-        if (show)
-            this.showUI();
+        this.options = options;
     }
     showUI() {
+        const speed = document.getElementById('speed');
         document.getElementById('title').classList.remove('hidden');
         document.getElementById('controls').classList.remove('hidden');
+        speed.value = this.options.speed.toString();
     }
     registerEventListeners() {
         document.getElementById('reset').addEventListener('click', () => {
             this.frontCanvas.thoughts.forEach((thought) => thought.die());
+        });
+        this.speed.addEventListener('input', () => {
+            this.options.speed = Number(this.speed.value);
         });
     }
     update() {

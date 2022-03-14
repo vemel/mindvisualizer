@@ -15,3 +15,12 @@ export interface IRawCoordsData {
   coords: [number, number]
   color: [number, number, number, number]
 }
+
+export interface IOptions {
+  maxThoughts: number
+  speed: number
+  shuffle: boolean
+  demo: boolean
+  hideUI: boolean
+  text: string
+}

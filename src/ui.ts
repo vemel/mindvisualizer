@@ -1,32 +1,34 @@
 import FrontCanvas from './frontCanvas.js'
+import { IOptions } from './interfaces.js'
 
 export default class UI {
-  readonly title: HTMLElement
-  readonly controls: HTMLElement
+  readonly title: HTMLTitleElement
+  readonly controls: HTMLDivElement
+  readonly speed: HTMLInputElement
   readonly frontCanvas: FrontCanvas
+  readonly options: IOptions
   readonly show: boolean
-  constructor({
-    frontCanvas,
-    show,
-  }: {
-    frontCanvas: FrontCanvas
-    show: boolean
-  }) {
-    this.title = document.getElementById('title')
-    this.controls = document.getElementById('controls')
+  constructor(options: IOptions, frontCanvas: FrontCanvas) {
+    this.title = document.getElementById('title') as HTMLTitleElement
+    this.controls = document.getElementById('controls') as HTMLDivElement
+    this.speed = document.getElementById('speed') as HTMLInputElement
     this.frontCanvas = frontCanvas
-    this.show = show
-    if (show) this.showUI()
+    this.options = options
   }
 
   showUI(): void {
+    const speed = document.getElementById('speed') as HTMLInputElement
     document.getElementById('title').classList.remove('hidden')
     document.getElementById('controls').classList.remove('hidden')
+    speed.value = this.options.speed.toString()
   }
 
   registerEventListeners(): void {
     document.getElementById('reset').addEventListener('click', () => {
       this.frontCanvas.thoughts.forEach((thought) => thought.die())
+    })
+    this.speed.addEventListener('input', () => {
+      this.options.speed = Number(this.speed.value)
     })
   }
 
