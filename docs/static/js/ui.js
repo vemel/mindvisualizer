@@ -7,16 +7,15 @@ export default class UI {
         this.options = options;
     }
     showUI() {
-        const speed = document.getElementById('speed');
-        document.getElementById('title').classList.remove('hidden');
-        document.getElementById('controls').classList.remove('hidden');
-        speed.value = this.options.speed.toString();
+        this.title.classList.remove('hidden');
+        this.controls.classList.remove('hidden');
+        this.speed.value = this.options.speed.toString();
     }
     registerEventListeners() {
-        document.getElementById('reset').addEventListener('click', () => {
+        this.controls.querySelector('.reset').addEventListener('click', () => {
             this.frontCanvas.thoughts.forEach((thought) => thought.die());
         });
-        document.getElementById('next').addEventListener('click', () => {
+        this.controls.querySelector('.next').addEventListener('click', () => {
             if (this.options.renderer)
                 this.options.renderer.next();
         });
