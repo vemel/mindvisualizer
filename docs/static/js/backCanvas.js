@@ -1,7 +1,7 @@
 import { randInt, sum } from './utils.js';
 export default class BackCanvas {
     constructor() {
-        this.font = 'Ubuntu';
+        this.font = 'Ubuntu, sans-serif';
         this.lineHeight = 1.2;
         this.canvas = document.getElementById('back');
         this.context = this.canvas.getContext('2d');

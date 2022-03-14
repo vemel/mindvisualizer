@@ -1,7 +1,7 @@
 import { randInt, sum } from './utils.js'
 
 export default class BackCanvas {
-  font = 'Ubuntu'
+  font = 'Ubuntu, sans-serif'
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D
   lineHeight: number = 1.2
