@@ -32,7 +32,9 @@ export default class Renderer extends Timer {
       : new OrderedIterator(this.texts)
   }
 
-  updateOnInterval(): void {
+  next() {
+    if (this.texts.length < 2) return
+
     const text = this.iterator.next()
     this.backCanvas.clear()
     this.backCanvas.drawText(text)
@@ -41,5 +43,9 @@ export default class Renderer extends Timer {
       const data = event.data as Array<IRawCoordsData>
       this.frontCanvas.setCoordsData(data)
     }
+  }
+
+  updateOnInterval(): void {
+    this.next()
   }
 }

@@ -16,6 +16,10 @@ export default class UI {
         document.getElementById('reset').addEventListener('click', () => {
             this.frontCanvas.thoughts.forEach((thought) => thought.die());
         });
+        document.getElementById('next').addEventListener('click', () => {
+            if (this.options.renderer)
+                this.options.renderer.next();
+        });
         this.speed.addEventListener('input', () => {
             this.options.speed = Number(this.speed.value);
         });

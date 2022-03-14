@@ -5,15 +5,6 @@ import Renderer from './renderer.js'
 import UI from './ui.js'
 import { IOptions } from './interfaces.js'
 
-const options: IOptions = {
-  maxThoughts: 2500,
-  speed: 2.0,
-  shuffle: true,
-  demo: false,
-  hideUI: false,
-  text: '',
-}
-
 function getTexts() {
   const params = new URLSearchParams(window.location.search)
   let result = ''
@@ -35,7 +26,7 @@ function getTexts() {
   return result.split('.').map((x) => x.toUpperCase())
 }
 
-function updateOpts() {
+function updateOptions(options: IOptions) {
   const params = new URLSearchParams(window.location.search)
   if (params.get('demo')) options.demo = params.get('demo') === 'true'
   if (params.get('speed')) options.speed = Number(params.get('speed'))
@@ -54,7 +45,16 @@ function loadFonts() {
 
 const main = () => {
   loadFonts()
-  updateOpts()
+  const options: IOptions = {
+    maxThoughts: 2500,
+    speed: 2.0,
+    shuffle: true,
+    demo: false,
+    hideUI: false,
+    text: '',
+    renderer: null,
+  }
+  updateOptions(options)
 
   const backCanvas = new BackCanvas()
   backCanvas.init()
@@ -64,16 +64,18 @@ const main = () => {
   frontCanvas.init()
   frontCanvas.registerEventListeners()
 
-  const ui = new UI(options, frontCanvas)
-  if (!options.hideUI) ui.showUI()
-  ui.registerEventListeners()
-
   const renderer = new Renderer({
     frontCanvas,
     backCanvas,
     shuffle: options.shuffle,
     texts: getTexts(),
   })
+
+  options.renderer = renderer
+
+  const ui = new UI(options, frontCanvas)
+  if (!options.hideUI) ui.showUI()
+  ui.registerEventListeners()
 
   let started = Date.now()
   setInterval(() => {

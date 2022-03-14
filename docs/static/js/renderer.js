@@ -11,7 +11,9 @@ export default class Renderer extends Timer {
             ? new ShuffleIterator(this.texts)
             : new OrderedIterator(this.texts);
     }
-    updateOnInterval() {
+    next() {
+        if (this.texts.length < 2)
+            return;
         const text = this.iterator.next();
         this.backCanvas.clear();
         this.backCanvas.drawText(text);
@@ -20,5 +22,8 @@ export default class Renderer extends Timer {
             const data = event.data;
             this.frontCanvas.setCoordsData(data);
         };
+    }
+    updateOnInterval() {
+        this.next();
     }
 }
