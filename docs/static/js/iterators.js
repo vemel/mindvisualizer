@@ -1,9 +1,15 @@
 export class OrderedIterator {
     constructor(items) {
         this.items = items;
+        this.last = null;
         this.index = 0;
     }
     next() {
+        const result = this._next();
+        this.last = result;
+        return result;
+    }
+    _next() {
         if (!this.items.length)
             return null;
         const result = this.items[this.index];
@@ -27,7 +33,7 @@ export class ShuffleIterator extends OrderedIterator {
         }
         return result;
     }
-    next() {
+    _next() {
         if (!this.items.length)
             return null;
         if (this.items.length === 1)

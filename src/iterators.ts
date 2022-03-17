@@ -1,11 +1,18 @@
 export class OrderedIterator<T> {
   readonly items: Array<T>
   protected index: number
+  last: T
   constructor(items: Array<T>) {
     this.items = items
+    this.last = null
     this.index = 0
   }
   next(): T {
+    const result = this._next()
+    this.last = result
+    return result
+  }
+  protected _next(): T {
     if (!this.items.length) return null
     const result = this.items[this.index]
     this.index = (this.index + 1) % this.items.length
@@ -32,7 +39,7 @@ export class ShuffleIterator<T> extends OrderedIterator<T> {
     return result
   }
 
-  next(): T {
+  _next(): T {
     if (!this.items.length) return null
     if (this.items.length === 1) return this.items[0]
     const itemIndex = this.indexes[this.index]

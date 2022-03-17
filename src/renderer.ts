@@ -33,9 +33,9 @@ export default class Renderer extends Timer {
   }
 
   next() {
-    if (this.texts.length < 2) return
-
+    const lastText = this.iterator.last
     const text = this.iterator.next()
+    if (text === lastText) return
     this.backCanvas.clear()
     this.backCanvas.drawText(text)
     const getCoordsWorker = this.backCanvas.getCoordsWorker()
