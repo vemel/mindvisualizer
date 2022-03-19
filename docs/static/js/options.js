@@ -1,6 +1,7 @@
 import TEXTS from './texts.js';
 export default class Options {
     constructor() {
+        this.localStorageKey = 'mindvisualizer';
         this.texts = TEXTS.emoji;
         this.maxThoughts = 2500;
         this.speed = 2.0;
@@ -12,14 +13,14 @@ export default class Options {
         this.backCanvas = null;
     }
     updateFromLocalStorage() {
-        const stateStr = localStorage.getItem('mindvisualizer');
+        const stateStr = localStorage.getItem(this.localStorageKey);
         if (!stateStr)
             return;
         const state = JSON.parse(stateStr);
         this.fromObject(state);
     }
     saveToLocalStorage() {
-        localStorage.setItem('mindvisualizer', JSON.stringify(this.toObject()));
+        localStorage.setItem(this.localStorageKey, JSON.stringify(this.toObject()));
     }
     toObject() {
         return {

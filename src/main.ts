@@ -55,7 +55,6 @@ const main = () => {
     started = now
     renderer.update(dt)
     frontCanvas.update(dt)
-    if (options.demo) frontCanvas.updateDemo()
     ui.update(secondsPassed)
   }, 10)
 }

@@ -14,6 +14,7 @@ export default class Options {
   renderer: Renderer | null
   frontCanvas: FrontCanvas | null
   backCanvas: BackCanvas | null
+  readonly localStorageKey = 'mindvisualizer'
 
   constructor() {
     this.texts = TEXTS.emoji
@@ -28,14 +29,14 @@ export default class Options {
   }
 
   updateFromLocalStorage(): void {
-    const stateStr = localStorage.getItem('mindvisualizer')
+    const stateStr = localStorage.getItem(this.localStorageKey)
     if (!stateStr) return
     const state = JSON.parse(stateStr) as IOptionsState
     this.fromObject(state)
   }
 
   saveToLocalStorage(): void {
-    localStorage.setItem('mindvisualizer', JSON.stringify(this.toObject()))
+    localStorage.setItem(this.localStorageKey, JSON.stringify(this.toObject()))
   }
 
   toObject(): IOptionsState {

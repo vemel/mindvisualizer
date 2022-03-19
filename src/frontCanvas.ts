@@ -115,6 +115,7 @@ export default class FrontCanvas extends Timer {
     if (!super.update(dt)) return false
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     this.killOldest()
+    this.updateDemo()
     this.updateEmitters()
     for (const thought of this.thoughts) {
       this.updateThought(thought, dt)
@@ -204,6 +205,10 @@ export default class FrontCanvas extends Timer {
   }
 
   updateDemo(): void {
+    if (!this.options.demo) {
+      this.emitterCoords.delete('demo')
+      return
+    }
     // if (this.thoughts.length >= this.maxThoughts) return;
     const center = new Coords(this.canvas.width / 2, this.canvas.height / 2)
     const radius = Math.min(this.canvas.height, this.canvas.width) * 0.4
