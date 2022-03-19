@@ -6,7 +6,7 @@ import Timer from './timer.js'
 import { ICoordsData, IClickEvent, IRawCoordsData } from './interfaces.js'
 
 export default class FrontCanvas extends Timer {
-  maxThoughts = 5000
+  maxThoughts = 3000
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D
   thoughts: Array<Thought>

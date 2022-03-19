@@ -6,7 +6,7 @@ import Timer from './timer.js';
 export default class FrontCanvas extends Timer {
     constructor() {
         super(true);
-        this.maxThoughts = 5000;
+        this.maxThoughts = 3000;
         this.canvas = document.getElementById('front');
         this.context = this.canvas.getContext('2d');
         this.thoughts = [];

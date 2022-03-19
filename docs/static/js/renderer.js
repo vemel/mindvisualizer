@@ -1,27 +1,24 @@
 import { ShuffleIterator, OrderedIterator } from './iterators.js';
 import Timer from './timer.js';
 export default class Renderer extends Timer {
-    constructor({ texts, shuffle, backCanvas, frontCanvas, }) {
+    constructor(options) {
         super(true, 60 * 1.5);
-        this.texts = texts;
-        this.shuffle = shuffle;
-        this.backCanvas = backCanvas;
-        this.frontCanvas = frontCanvas;
-        this.iterator = this.shuffle
-            ? new ShuffleIterator(this.texts)
-            : new OrderedIterator(this.texts);
+        this.options = options;
+        this.iterator = options.shuffle
+            ? new ShuffleIterator(options.texts)
+            : new OrderedIterator(options.texts);
     }
     next() {
         const lastText = this.iterator.last;
         const text = this.iterator.next();
         if (text === lastText)
             return;
-        this.backCanvas.clear();
-        this.backCanvas.drawText(text);
-        const getCoordsWorker = this.backCanvas.getCoordsWorker();
+        this.options.backCanvas.clear();
+        this.options.backCanvas.drawText(text);
+        const getCoordsWorker = this.options.backCanvas.getCoordsWorker();
         getCoordsWorker.onmessage = (event) => {
             const data = event.data;
-            this.frontCanvas.setCoordsData(data);
+            this.options.frontCanvas.setCoordsData(data);
         };
     }
     updateOnInterval() {
