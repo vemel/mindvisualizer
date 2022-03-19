@@ -55,7 +55,7 @@ export default class Timer {
   }
 
   isStarted(): boolean {
-    return this.value > 0.0
+    return this._value != null
   }
 
   get value(): number {

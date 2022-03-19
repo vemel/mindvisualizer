@@ -4,14 +4,14 @@ import Color from './color.js';
 import Coords from './coords.js';
 import Timer from './timer.js';
 export default class FrontCanvas extends Timer {
-    constructor() {
+    constructor(options) {
         super(true);
-        this.maxThoughts = 3000;
         this.canvas = document.getElementById('front');
         this.context = this.canvas.getContext('2d');
         this.thoughts = [];
         this.coordsData = [];
         this.emitterCoords = new Map();
+        this.options = options;
         this.timers.set('coordsUpdated', new Timer(false));
     }
     init() {
@@ -36,20 +36,21 @@ export default class FrontCanvas extends Timer {
             if (Math.random() > chance)
                 continue;
             const radius = 30 * Math.random();
-            const angle = Math.PI * Math.random();
+            const angle = 2 * Math.PI * Math.random();
             const position = new Coords(Math.floor(coords.x + radius * Math.sin(angle)), Math.floor(coords.y + radius * Math.cos(angle)));
             this.createThought(position);
         }
+    }
+    get maxThoughts() {
+        return this.options.maxThoughts;
     }
     killOldest() {
         if (this.thoughts.length < this.maxThoughts)
             return;
         this.thoughts
             .slice(0, this.thoughts.length - this.maxThoughts)
-            .forEach((thought) => {
-            if (!thought.isDying())
-                thought.die();
-        });
+            .filter((thought) => !thought.isDying())
+            .forEach((thought) => thought.die());
     }
     disturbThoughts(coords) {
         const radius = 50.0;

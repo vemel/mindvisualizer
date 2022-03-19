@@ -14,11 +14,12 @@ function loadFonts() {
 const main = () => {
     loadFonts();
     const options = new Options();
+    window.options = options;
     options.updateFromQuery();
     const backCanvas = new BackCanvas();
     backCanvas.init();
     backCanvas.registerEventListeners();
-    const frontCanvas = new FrontCanvas();
+    const frontCanvas = new FrontCanvas(options);
     frontCanvas.init();
     frontCanvas.registerEventListeners();
     options.frontCanvas = frontCanvas;

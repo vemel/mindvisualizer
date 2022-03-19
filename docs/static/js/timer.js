@@ -41,7 +41,7 @@ export default class Timer {
         this._value = null;
     }
     isStarted() {
-        return this.value > 0.0;
+        return this._value != null;
     }
     get value() {
         if (this._value === null || this._value < 0.0)

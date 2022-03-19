@@ -3,23 +3,25 @@ import Thought from './thought.js'
 import Color from './color.js'
 import Coords from './coords.js'
 import Timer from './timer.js'
+import Options from './options.js'
 import { ICoordsData, IClickEvent, IRawCoordsData } from './interfaces.js'
 
 export default class FrontCanvas extends Timer {
-  maxThoughts = 3000
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D
   thoughts: Array<Thought>
   coordsData: Array<IRawCoordsData>
   emitterCoords: Map<string, Coords>
+  options: Options
 
-  constructor() {
+  constructor(options: Options) {
     super(true)
     this.canvas = <HTMLCanvasElement>document.getElementById('front')
     this.context = this.canvas.getContext('2d')
     this.thoughts = []
     this.coordsData = []
     this.emitterCoords = new Map()
+    this.options = options
     this.timers.set('coordsUpdated', new Timer(false))
   }
 
@@ -59,7 +61,7 @@ export default class FrontCanvas extends Timer {
     for (let i = 0; i < particles; i++) {
       if (Math.random() > chance) continue
       const radius = 30 * Math.random()
-      const angle = Math.PI * Math.random()
+      const angle = 2 * Math.PI * Math.random()
       const position = new Coords(
         Math.floor(coords.x + radius * Math.sin(angle)),
         Math.floor(coords.y + radius * Math.cos(angle))
@@ -68,13 +70,16 @@ export default class FrontCanvas extends Timer {
     }
   }
 
+  get maxThoughts(): number {
+    return this.options.maxThoughts
+  }
+
   killOldest(): void {
     if (this.thoughts.length < this.maxThoughts) return
     this.thoughts
       .slice(0, this.thoughts.length - this.maxThoughts)
-      .forEach((thought) => {
-        if (!thought.isDying()) thought.die()
-      })
+      .filter((thought) => !thought.isDying())
+      .forEach((thought) => thought.die())
   }
 
   disturbThoughts(coords: Coords): void {
