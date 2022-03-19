@@ -2,6 +2,7 @@ import BackCanvas from './backCanvas.js'
 import FrontCanvas from './frontCanvas.js'
 import Renderer from './renderer.js'
 import TEXTS from './texts.js'
+import { IOptionsState } from './interfaces.js'
 
 export default class Options {
   maxThoughts: number
@@ -24,6 +25,42 @@ export default class Options {
     this.renderer = null
     this.frontCanvas = null
     this.backCanvas = null
+  }
+
+  updateFromLocalStorage(): void {
+    const stateStr = localStorage.getItem('mindvisualizer')
+    if (!stateStr) return
+    const state = JSON.parse(stateStr) as IOptionsState
+    this.fromObject(state)
+  }
+
+  saveToLocalStorage(): void {
+    localStorage.setItem('mindvisualizer', JSON.stringify(this.toObject()))
+  }
+
+  toObject(): IOptionsState {
+    return {
+      maxThoughts: this.maxThoughts,
+      demo: this.demo,
+      speed: this.speed,
+      shuffle: this.shuffle,
+      texts: this.texts,
+      hideUI: this.hideUI,
+    }
+  }
+
+  fromObject(state: IOptionsState): void {
+    this.demo = state.demo
+    this.speed = state.speed
+    this.shuffle = state.shuffle
+    this.texts = state.texts
+    this.hideUI = state.hideUI
+    this.maxThoughts = state.maxThoughts
+  }
+
+  set(state: IOptionsState): void {
+    this.fromObject(state)
+    this.saveToLocalStorage()
   }
 
   updateFromQuery() {

@@ -1,22 +1,21 @@
-export default class UIControl {
+export default class UICheckbox {
     constructor(element) {
         this.element = element;
         this.valueSpan = document.querySelector(`.option-value[data-option="${this.element.id}"]`);
     }
     set(value) {
-        this.element.value = value;
+        this.element.checked = value;
         if (this.valueSpan)
-            this.valueSpan.innerText = value;
+            this.valueSpan.innerText = value ? 'on' : 'off';
     }
     get() {
-        return this.element.value;
+        return this.element.checked;
     }
     registerEventListeners(onUpdate) {
         this.element.addEventListener('input', () => {
-            console.log(this.element.value);
             if (this.valueSpan)
-                this.valueSpan.innerText = this.element.value;
-            onUpdate(this.element.value);
+                this.valueSpan.innerText = this.element.checked ? 'on' : 'off';
+            onUpdate(this.element.checked);
         });
     }
 }

@@ -24,7 +24,9 @@ const main = () => {
   loadFonts()
   const options = new Options()
   window.options = options
+  options.updateFromLocalStorage()
   options.updateFromQuery()
+  options.saveToLocalStorage()
 
   const backCanvas = new BackCanvas()
   backCanvas.init()

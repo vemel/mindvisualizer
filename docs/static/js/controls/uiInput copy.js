@@ -1,4 +1,4 @@
-export default class UIControl {
+export default class UIInput {
     constructor(element) {
         this.element = element;
         this.valueSpan = document.querySelector(`.option-value[data-option="${this.element.id}"]`);

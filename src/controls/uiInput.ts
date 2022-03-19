@@ -1,4 +1,4 @@
-export default class UIControl {
+export default class UIInput {
   element: HTMLInputElement
   valueSpan: HTMLSpanElement
 

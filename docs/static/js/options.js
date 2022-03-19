@@ -11,6 +11,38 @@ export default class Options {
         this.frontCanvas = null;
         this.backCanvas = null;
     }
+    updateFromLocalStorage() {
+        const stateStr = localStorage.getItem('mindvisualizer');
+        if (!stateStr)
+            return;
+        const state = JSON.parse(stateStr);
+        this.fromObject(state);
+    }
+    saveToLocalStorage() {
+        localStorage.setItem('mindvisualizer', JSON.stringify(this.toObject()));
+    }
+    toObject() {
+        return {
+            maxThoughts: this.maxThoughts,
+            demo: this.demo,
+            speed: this.speed,
+            shuffle: this.shuffle,
+            texts: this.texts,
+            hideUI: this.hideUI,
+        };
+    }
+    fromObject(state) {
+        this.demo = state.demo;
+        this.speed = state.speed;
+        this.shuffle = state.shuffle;
+        this.texts = state.texts;
+        this.hideUI = state.hideUI;
+        this.maxThoughts = state.maxThoughts;
+    }
+    set(state) {
+        this.fromObject(state);
+        this.saveToLocalStorage();
+    }
     updateFromQuery() {
         const params = new URLSearchParams(window.location.search);
         if (params.get('demo'))

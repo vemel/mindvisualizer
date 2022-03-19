@@ -5,14 +5,19 @@ import Timer from './timer.js'
 
 export default class Renderer extends Timer {
   options: Options
-  iterator: OrderedIterator<string>
+  private iterators: Map<boolean, OrderedIterator<string>>
 
   constructor(options: Options) {
     super(true, 60 * 1.5)
     this.options = options
-    this.iterator = options.shuffle
-      ? new ShuffleIterator(options.texts)
-      : new OrderedIterator(options.texts)
+    this.iterators = new Map([
+      [true, new ShuffleIterator(options.texts)],
+      [false, new OrderedIterator(options.texts)],
+    ])
+  }
+
+  get iterator(): OrderedIterator<string> {
+    return this.iterators.get(this.options.shuffle)
   }
 
   next() {
