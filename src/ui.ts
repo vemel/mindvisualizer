@@ -1,11 +1,13 @@
 import Options from './options.js'
 import Timer from './timer.js'
+import UIControl from './uiControl.js'
 import { sum } from './utils.js'
 
 export default class UI extends Timer {
   readonly title: HTMLTitleElement
   readonly controls: HTMLDivElement
-  readonly speed: HTMLInputElement
+  readonly speed: UIControl
+  readonly maxThoughts: UIControl
   readonly fps: HTMLDivElement
   readonly options: Options
   private dts: Array<number>
@@ -13,7 +15,12 @@ export default class UI extends Timer {
     super(true, 1.0)
     this.title = document.getElementById('title') as HTMLTitleElement
     this.controls = document.getElementById('controls') as HTMLDivElement
-    this.speed = document.getElementById('speed') as HTMLInputElement
+    this.speed = new UIControl(
+      document.getElementById('speed') as HTMLInputElement
+    )
+    this.maxThoughts = new UIControl(
+      document.getElementById('maxThoughts') as HTMLInputElement
+    )
     this.fps = document.getElementById('fps') as HTMLDivElement
     this.options = options
     this.dts = []
@@ -26,7 +33,8 @@ export default class UI extends Timer {
   showUI(): void {
     this.title.classList.remove('hidden')
     this.controls.classList.remove('hidden')
-    this.speed.value = this.options.speed.toString()
+    this.speed.set(this.options.speed.toString())
+    this.maxThoughts.set(this.options.maxThoughts.toString())
   }
 
   registerEventListeners(): void {
@@ -36,9 +44,12 @@ export default class UI extends Timer {
     this.controls.querySelector('.next').addEventListener('click', () => {
       if (this.options.renderer) this.options.renderer.next()
     })
-    this.speed.addEventListener('input', () => {
-      this.options.speed = Number(this.speed.value)
-    })
+    this.speed.registerEventListeners(
+      (value) => (this.options.speed = Number(value))
+    )
+    this.maxThoughts.registerEventListeners(
+      (value) => (this.options.maxThoughts = Number(value))
+    )
   }
 
   update(dt: number): boolean {

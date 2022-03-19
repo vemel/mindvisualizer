@@ -1,11 +1,13 @@
 import Timer from './timer.js';
+import UIControl from './uiControl.js';
 import { sum } from './utils.js';
 export default class UI extends Timer {
     constructor(options) {
         super(true, 1.0);
         this.title = document.getElementById('title');
         this.controls = document.getElementById('controls');
-        this.speed = document.getElementById('speed');
+        this.speed = new UIControl(document.getElementById('speed'));
+        this.maxThoughts = new UIControl(document.getElementById('maxThoughts'));
         this.fps = document.getElementById('fps');
         this.options = options;
         this.dts = [];
@@ -16,7 +18,8 @@ export default class UI extends Timer {
     showUI() {
         this.title.classList.remove('hidden');
         this.controls.classList.remove('hidden');
-        this.speed.value = this.options.speed.toString();
+        this.speed.set(this.options.speed.toString());
+        this.maxThoughts.set(this.options.maxThoughts.toString());
     }
     registerEventListeners() {
         this.controls.querySelector('.reset').addEventListener('click', () => {
@@ -26,9 +29,8 @@ export default class UI extends Timer {
             if (this.options.renderer)
                 this.options.renderer.next();
         });
-        this.speed.addEventListener('input', () => {
-            this.options.speed = Number(this.speed.value);
-        });
+        this.speed.registerEventListeners((value) => (this.options.speed = Number(value)));
+        this.maxThoughts.registerEventListeners((value) => (this.options.maxThoughts = Number(value)));
     }
     update(dt) {
         this.dts = [...this.dts.slice(-10), dt];
