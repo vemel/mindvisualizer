@@ -22,5 +22,5 @@ export interface IOptionsState {
   shuffle: boolean
   demo: boolean
   hideUI: boolean
-  texts: Array<string>
+  textsQuery: string
 }

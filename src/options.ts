@@ -10,14 +10,14 @@ export default class Options {
   shuffle: boolean
   demo: boolean
   hideUI: boolean
-  texts: Array<string>
+  textsQuery: string
   renderer: Renderer | null
   frontCanvas: FrontCanvas | null
   backCanvas: BackCanvas | null
   readonly localStorageKey = 'mindvisualizer'
 
   constructor() {
-    this.texts = TEXTS.emoji
+    this.textsQuery = 'emoji'
     this.maxThoughts = 2500
     this.speed = 2.0
     this.shuffle = true
@@ -45,18 +45,18 @@ export default class Options {
       demo: this.demo,
       speed: this.speed,
       shuffle: this.shuffle,
-      texts: this.texts,
+      textsQuery: this.textsQuery,
       hideUI: this.hideUI,
     }
   }
 
   fromObject(state: IOptionsState): void {
-    this.demo = state.demo
-    this.speed = state.speed
-    this.shuffle = state.shuffle
-    this.texts = state.texts
-    this.hideUI = state.hideUI
-    this.maxThoughts = state.maxThoughts
+    if (state.demo !== undefined) this.demo = state.demo
+    if (state.speed !== undefined) this.speed = state.speed
+    if (state.shuffle !== undefined) this.shuffle = state.shuffle
+    if (state.textsQuery !== undefined) this.textsQuery = state.textsQuery
+    if (state.hideUI !== undefined) this.hideUI = state.hideUI
+    if (state.maxThoughts !== undefined) this.maxThoughts = state.maxThoughts
   }
 
   set(state: IOptionsState): void {
@@ -74,18 +74,18 @@ export default class Options {
     if (params.get('q')) {
       const encoded = window.btoa(unescape(encodeURIComponent(params.get('q'))))
       console.log(`bq=${encoded}`)
-      this.texts = this.getTexts(params.get('q'))
+      this.textsQuery = params.get('q')
     }
     if (params.get('bq')) {
       const decoded = decodeURIComponent(escape(window.atob(params.get('bq'))))
-      this.texts = this.getTexts(decoded)
+      this.textsQuery = decoded
     }
   }
 
-  private getTexts(queryString: string) {
-    if (Object.keys(TEXTS).includes(queryString)) {
-      return TEXTS[queryString].map((x: string) => x.toUpperCase())
+  get texts(): Array<string> {
+    if (Object.keys(TEXTS).includes(this.textsQuery)) {
+      return TEXTS[this.textsQuery].map((x: string) => x.toUpperCase())
     }
-    return queryString.split('.').map((x) => x.toUpperCase())
+    return this.textsQuery.split('.').map((x) => x.toUpperCase())
   }
 }
