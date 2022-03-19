@@ -33,7 +33,7 @@ export default class UI extends Timer {
         this.maxThoughts.registerEventListeners((value) => (this.options.maxThoughts = Number(value)));
     }
     update(dt) {
-        this.dts = [...this.dts.slice(-10), dt];
+        this.dts = [...this.dts.slice(-50), dt];
         return super.update(dt);
     }
     updateOnInterval() {

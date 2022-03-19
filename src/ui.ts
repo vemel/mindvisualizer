@@ -53,7 +53,7 @@ export default class UI extends Timer {
   }
 
   update(dt: number): boolean {
-    this.dts = [...this.dts.slice(-10), dt]
+    this.dts = [...this.dts.slice(-50), dt]
     return super.update(dt)
   }
 
