@@ -125,19 +125,24 @@ export default class Thought extends Timer {
     return true
   }
 
-  draw(context: CanvasRenderingContext2D): void {
+  draw(context: CanvasRenderingContext2D, alpha: number): void {
     if (this.isDead()) return
 
-    context.save()
     context.beginPath()
-    context.translate(this.position.x, this.position.y)
-    context.moveTo(0, 0)
-    context.arc(0, 0, this.getRadius(), 0, 2 * Math.PI, false)
+    context.arc(
+      this.position.x,
+      this.position.y,
+      this.getRadius(),
+      0,
+      2 * Math.PI,
+      false
+    )
 
-    context.fillStyle = this.getColor().toRGBA()
-    context.strokeStyle = new Color().alpha(0.0).toRGBA()
-    context.stroke()
+    const mainColor = this.getColor()
+    const drawColor = mainColor.alpha(mainColor.a * alpha)
+    context.fillStyle = drawColor.toRGBA()
+    // context.strokeStyle = new Color().alpha(0.0).toRGBA()
+    // context.stroke()
     context.fill()
-    context.restore()
   }
 }

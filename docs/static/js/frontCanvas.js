@@ -7,9 +7,7 @@ export default class FrontCanvas extends Timer {
     constructor(options) {
         super(true);
         this.canvas = document.getElementById('front');
-        this.context = this.canvas.getContext('2d', {
-            alpha: false,
-        });
+        this.context = this.canvas.getContext('2d');
         this.thoughts = [];
         this.coordsData = [];
         this.emitterCoords = new Map();
@@ -72,12 +70,15 @@ export default class FrontCanvas extends Timer {
         thought.update(dt);
     }
     drawThoughts(dt) {
-        // const alpha = 0.3
-        const alpha = 1.0;
-        this.context.fillStyle = `rgba(0,0,0,${alpha})`;
+        if (dt < 0.0001)
+            return;
+        const alpha = Math.min(4.0 * dt, 1.0);
+        const thoughtAlpha = Math.min(12.0 * dt, 1.0);
+        this.context.fillStyle = new Color(0, 0, 0, alpha).toRGBA();
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        // this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
         for (const thought of this.thoughts) {
-            thought.draw(this.context);
+            thought.draw(this.context, thoughtAlpha);
         }
     }
     shouldMove(thought) {

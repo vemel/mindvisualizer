@@ -91,18 +91,16 @@ export default class Thought extends Timer {
         this.position = bezierStart.lerp(bezierEnd, ease);
         return true;
     }
-    draw(context) {
+    draw(context, alpha) {
         if (this.isDead())
             return;
-        context.save();
         context.beginPath();
-        context.translate(this.position.x, this.position.y);
-        context.moveTo(0, 0);
-        context.arc(0, 0, this.getRadius(), 0, 2 * Math.PI, false);
-        context.fillStyle = this.getColor().toRGBA();
-        context.strokeStyle = new Color().alpha(0.0).toRGBA();
-        context.stroke();
+        context.arc(this.position.x, this.position.y, this.getRadius(), 0, 2 * Math.PI, false);
+        const mainColor = this.getColor();
+        const drawColor = mainColor.alpha(mainColor.a * alpha);
+        context.fillStyle = drawColor.toRGBA();
+        // context.strokeStyle = new Color().alpha(0.0).toRGBA()
+        // context.stroke()
         context.fill();
-        context.restore();
     }
 }
