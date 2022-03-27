@@ -7,7 +7,9 @@ export default class FrontCanvas extends Timer {
     constructor(options) {
         super(true);
         this.canvas = document.getElementById('front');
-        this.context = this.canvas.getContext('2d');
+        this.context = this.canvas.getContext('2d', {
+            alpha: false,
+        });
         this.thoughts = [];
         this.coordsData = [];
         this.emitterCoords = new Map();
@@ -42,7 +44,7 @@ export default class FrontCanvas extends Timer {
         }
     }
     get maxThoughts() {
-        return this.options.maxThoughts;
+        return this.options.params.maxThoughts.get();
     }
     killOldest() {
         if (this.thoughts.length < this.maxThoughts)
@@ -68,7 +70,15 @@ export default class FrontCanvas extends Timer {
         if (this.shouldMove(thought))
             this.moveThought(thought, 5.0);
         thought.update(dt);
-        thought.draw(this.context);
+    }
+    drawThoughts(dt) {
+        // const alpha = 0.3
+        const alpha = 1.0;
+        this.context.fillStyle = `rgba(0,0,0,${alpha})`;
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        for (const thought of this.thoughts) {
+            thought.draw(this.context);
+        }
     }
     shouldMove(thought) {
         if (thought.getTimer('started').value > this.getTimer('coordsUpdated').value)
@@ -82,7 +92,6 @@ export default class FrontCanvas extends Timer {
     update(dt) {
         if (!super.update(dt))
             return false;
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.killOldest();
         this.updateDemo();
         this.updateEmitters();
@@ -105,8 +114,6 @@ export default class FrontCanvas extends Timer {
         return new Coords(coords.x, newHeight / 2 + yOffset);
     }
     registerEventListeners() {
-        let isDrawing = false;
-        let resizedFinished;
         window.addEventListener('resize', () => {
             const newHeight = (window.innerHeight * this.canvas.width) / window.innerWidth;
             const oldHeight = this.canvas.height;
@@ -154,7 +161,7 @@ export default class FrontCanvas extends Timer {
         });
     }
     updateDemo() {
-        if (!this.options.demo) {
+        if (!this.options.params.demo.get()) {
             this.emitterCoords.delete('demo');
             return;
         }
