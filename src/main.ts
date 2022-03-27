@@ -8,6 +8,7 @@ import Options from './options.js'
 declare global {
   interface Window {
     options: Options
+    requestAnimationFrame: () => null
   }
 }
 
@@ -44,19 +45,23 @@ const main = () => {
   options.renderer = renderer
 
   const ui = new UI(options)
-  if (!options.hideUI) ui.showUI()
   ui.registerEventListeners()
 
   let started = Date.now()
-  setInterval(() => {
+
+  const update = () => {
     const now = Date.now()
     const secondsPassed = (now - started) / 1000
-    const dt = secondsPassed * options.speed
+    const dt = secondsPassed * options.params.speed.get()
     started = now
     renderer.update(dt)
     frontCanvas.update(dt)
     ui.update(secondsPassed)
-  }, 10)
+    frontCanvas.drawThoughts(dt)
+    window.requestAnimationFrame(update)
+  }
+
+  window.requestAnimationFrame(update)
 }
 
 window.onload = () => {

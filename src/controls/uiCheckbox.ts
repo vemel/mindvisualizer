@@ -1,14 +1,6 @@
-export default class UICheckbox {
-  element: HTMLInputElement
-  valueSpan: HTMLSpanElement
+import UIInput from './uiInput.js'
 
-  constructor(element: HTMLInputElement) {
-    this.element = element
-    this.valueSpan = document.querySelector(
-      `.option-value[data-option="${this.element.id}"]`
-    ) as HTMLSpanElement
-  }
-
+export default class UICheckbox extends UIInput<boolean> {
   set(value: boolean): void {
     this.element.checked = value
     if (this.valueSpan) this.valueSpan.innerText = value ? 'on' : 'off'

@@ -1,5 +1,5 @@
 import Timer from './timer.js';
-import UIInput from './controls/uiInput.js';
+import UIInput from './controls/uiSlider.js';
 import UICheckbox from './controls/uiCheckbox.js';
 import { sum } from './utils.js';
 export default class UI extends Timer {
@@ -7,24 +7,27 @@ export default class UI extends Timer {
         super(true, 1.0);
         this.title = document.getElementById('title');
         this.controls = document.getElementById('controls');
-        this.speed = new UIInput(document.getElementById('speed'));
-        this.maxThoughts = new UIInput(document.getElementById('maxThoughts'));
-        this.demo = new UICheckbox(document.getElementById('demoControl'));
-        this.shuffle = new UICheckbox(document.getElementById('shuffleControl'));
+        this.inputs = {
+            speed: new UIInput(document.getElementById('speed')),
+            maxThoughts: new UIInput(document.getElementById('maxThoughts')),
+            demo: new UICheckbox(document.getElementById('demoControl')),
+            shuffle: new UICheckbox(document.getElementById('shuffleControl')),
+        };
         this.fps = document.getElementById('fps');
         this.options = options;
         this.dts = [];
+        if (this.show)
+            this.showUI();
     }
     get show() {
-        return !this.options.hideUI;
+        return !this.options.params.hideUI.get();
     }
     showUI() {
         this.title.classList.remove('hidden');
         this.controls.classList.remove('hidden');
-        this.speed.set(this.options.speed.toString());
-        this.maxThoughts.set(this.options.maxThoughts.toString());
-        this.demo.set(this.options.demo);
-        this.shuffle.set(this.options.shuffle);
+        Object.entries(this.inputs).forEach(([key, input]) => {
+            input.set(this.options.params[key].get());
+        });
     }
     registerEventListeners() {
         this.controls.querySelector('.reset').addEventListener('click', () => {
@@ -34,10 +37,12 @@ export default class UI extends Timer {
             if (this.options.renderer)
                 this.options.renderer.next();
         });
-        this.speed.registerEventListeners((value) => this.options.set(Object.assign(Object.assign({}, this.options.toObject()), { speed: Number(value) })));
-        this.maxThoughts.registerEventListeners((value) => this.options.set(Object.assign(Object.assign({}, this.options.toObject()), { maxThoughts: Number(value) })));
-        this.demo.registerEventListeners((demo) => this.options.set(Object.assign(Object.assign({}, this.options.toObject()), { demo })));
-        this.shuffle.registerEventListeners((shuffle) => this.options.set(Object.assign(Object.assign({}, this.options.toObject()), { shuffle })));
+        Object.entries(this.inputs).forEach(([key, input]) => {
+            input.registerEventListeners((value) => {
+                this.options.params[key].set(value);
+                this.options.saveToLocalStorage();
+            });
+        });
     }
     update(dt) {
         this.dts = [...this.dts.slice(-50), dt];

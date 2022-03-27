@@ -1,16 +1,14 @@
 import Options from './options.js'
 import Timer from './timer.js'
-import UIInput from './controls/uiInput.js'
+import UIInput from './controls/uiSlider.js'
 import UICheckbox from './controls/uiCheckbox.js'
 import { sum } from './utils.js'
+import { IUIInputs } from './interfaces.js'
 
 export default class UI extends Timer {
   readonly title: HTMLTitleElement
   readonly controls: HTMLDivElement
-  readonly speed: UIInput
-  readonly maxThoughts: UIInput
-  readonly demo: UICheckbox
-  readonly shuffle: UICheckbox
+  readonly inputs: IUIInputs
   readonly fps: HTMLDivElement
   readonly options: Options
   private dts: Array<number>
@@ -18,34 +16,34 @@ export default class UI extends Timer {
     super(true, 1.0)
     this.title = document.getElementById('title') as HTMLTitleElement
     this.controls = document.getElementById('controls') as HTMLDivElement
-    this.speed = new UIInput(
-      document.getElementById('speed') as HTMLInputElement
-    )
-    this.maxThoughts = new UIInput(
-      document.getElementById('maxThoughts') as HTMLInputElement
-    )
-    this.demo = new UICheckbox(
-      document.getElementById('demoControl') as HTMLInputElement
-    )
-    this.shuffle = new UICheckbox(
-      document.getElementById('shuffleControl') as HTMLInputElement
-    )
+    this.inputs = {
+      speed: new UIInput(document.getElementById('speed') as HTMLInputElement),
+      maxThoughts: new UIInput(
+        document.getElementById('maxThoughts') as HTMLInputElement
+      ),
+      demo: new UICheckbox(
+        document.getElementById('demoControl') as HTMLInputElement
+      ),
+      shuffle: new UICheckbox(
+        document.getElementById('shuffleControl') as HTMLInputElement
+      ),
+    }
     this.fps = document.getElementById('fps') as HTMLDivElement
     this.options = options
     this.dts = []
+    if (this.show) this.showUI()
   }
 
   get show(): boolean {
-    return !this.options.hideUI
+    return !this.options.params.hideUI.get()
   }
 
   showUI(): void {
     this.title.classList.remove('hidden')
     this.controls.classList.remove('hidden')
-    this.speed.set(this.options.speed.toString())
-    this.maxThoughts.set(this.options.maxThoughts.toString())
-    this.demo.set(this.options.demo)
-    this.shuffle.set(this.options.shuffle)
+    Object.entries(this.inputs).forEach(([key, input]) => {
+      input.set(this.options.params[key].get())
+    })
   }
 
   registerEventListeners(): void {
@@ -55,21 +53,12 @@ export default class UI extends Timer {
     this.controls.querySelector('.next').addEventListener('click', () => {
       if (this.options.renderer) this.options.renderer.next()
     })
-    this.speed.registerEventListeners((value) =>
-      this.options.set({ ...this.options.toObject(), speed: Number(value) })
-    )
-    this.maxThoughts.registerEventListeners((value) =>
-      this.options.set({
-        ...this.options.toObject(),
-        maxThoughts: Number(value),
+    Object.entries(this.inputs).forEach(([key, input]) => {
+      input.registerEventListeners((value) => {
+        this.options.params[key].set(value)
+        this.options.saveToLocalStorage()
       })
-    )
-    this.demo.registerEventListeners((demo) =>
-      this.options.set({ ...this.options.toObject(), demo })
-    )
-    this.shuffle.registerEventListeners((shuffle) =>
-      this.options.set({ ...this.options.toObject(), shuffle })
-    )
+    })
   }
 
   update(dt: number): boolean {

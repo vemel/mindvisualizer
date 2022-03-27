@@ -10,7 +10,7 @@ export default class Renderer extends Timer {
         ]);
     }
     get iterator() {
-        return this.iterators.get(this.options.shuffle);
+        return this.iterators.get(this.options.params.shuffle.get());
     }
     next() {
         const lastText = this.iterator.last;

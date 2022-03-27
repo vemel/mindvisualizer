@@ -17,7 +17,9 @@ export default class FrontCanvas extends Timer {
   constructor(options: Options) {
     super(true)
     this.canvas = <HTMLCanvasElement>document.getElementById('front')
-    this.context = this.canvas.getContext('2d')
+    this.context = this.canvas.getContext('2d', {
+      alpha: false,
+    })
     this.thoughts = []
     this.coordsData = []
     this.emitterCoords = new Map()
@@ -71,7 +73,7 @@ export default class FrontCanvas extends Timer {
   }
 
   get maxThoughts(): number {
-    return this.options.maxThoughts
+    return this.options.params.maxThoughts.get()
   }
 
   killOldest(): void {
@@ -98,7 +100,16 @@ export default class FrontCanvas extends Timer {
     }
     if (this.shouldMove(thought)) this.moveThought(thought, 5.0)
     thought.update(dt)
-    thought.draw(this.context)
+  }
+
+  drawThoughts(dt: number): void {
+    // const alpha = 0.3
+    const alpha = 1.0
+    this.context.fillStyle = `rgba(0,0,0,${alpha})`
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    for (const thought of this.thoughts) {
+      thought.draw(this.context)
+    }
   }
 
   shouldMove(thought: Thought): boolean {
@@ -113,7 +124,6 @@ export default class FrontCanvas extends Timer {
 
   update(dt: number): boolean {
     if (!super.update(dt)) return false
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     this.killOldest()
     this.updateDemo()
     this.updateEmitters()
@@ -139,8 +149,6 @@ export default class FrontCanvas extends Timer {
   }
 
   registerEventListeners(): void {
-    let isDrawing = false
-    let resizedFinished: number
     window.addEventListener('resize', () => {
       const newHeight =
         (window.innerHeight * this.canvas.width) / window.innerWidth
@@ -205,7 +213,7 @@ export default class FrontCanvas extends Timer {
   }
 
   updateDemo(): void {
-    if (!this.options.demo) {
+    if (!this.options.params.demo.get()) {
       this.emitterCoords.delete('demo')
       return
     }

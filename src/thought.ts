@@ -127,19 +127,17 @@ export default class Thought extends Timer {
 
   draw(context: CanvasRenderingContext2D): void {
     if (this.isDead()) return
+
+    context.save()
     context.beginPath()
-    context.arc(
-      this.position.x,
-      this.position.y,
-      this.getRadius(),
-      0,
-      2 * Math.PI,
-      false
-    )
+    context.translate(this.position.x, this.position.y)
+    context.moveTo(0, 0)
+    context.arc(0, 0, this.getRadius(), 0, 2 * Math.PI, false)
+
     context.fillStyle = this.getColor().toRGBA()
-    context.fill()
-    context.lineWidth = 0
     context.strokeStyle = new Color().alpha(0.0).toRGBA()
     context.stroke()
+    context.fill()
+    context.restore()
   }
 }

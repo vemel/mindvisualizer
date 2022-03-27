@@ -17,7 +17,7 @@ export default class Renderer extends Timer {
   }
 
   get iterator(): OrderedIterator<string> {
-    return this.iterators.get(this.options.shuffle)
+    return this.iterators.get(this.options.params.shuffle.get())
   }
 
   next() {

@@ -1,4 +1,4 @@
-export default class UIInput {
+export default class UIInput<T> {
   element: HTMLInputElement
   valueSpan: HTMLSpanElement
 
@@ -9,19 +9,19 @@ export default class UIInput {
     ) as HTMLSpanElement
   }
 
-  set(value: string): void {
-    this.element.value = value
-    if (this.valueSpan) this.valueSpan.innerText = value
+  set(value: T): void {
+    this.element.value = value.toString()
+    if (this.valueSpan) this.valueSpan.innerText = value.toString()
   }
 
-  get(): string {
-    return this.element.value
+  get(): T {
+    return this.element.value as any
   }
 
-  registerEventListeners(onUpdate: (value: string) => void): void {
+  registerEventListeners(onUpdate: (value: T) => void): void {
     this.element.addEventListener('input', () => {
       if (this.valueSpan) this.valueSpan.innerText = this.element.value
-      onUpdate(this.element.value)
+      onUpdate(this.element.value as any)
     })
   }
 }

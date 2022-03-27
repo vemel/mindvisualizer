@@ -4,9 +4,9 @@ export default class UIInput {
         this.valueSpan = document.querySelector(`.option-value[data-option="${this.element.id}"]`);
     }
     set(value) {
-        this.element.value = value;
+        this.element.value = value.toString();
         if (this.valueSpan)
-            this.valueSpan.innerText = value;
+            this.valueSpan.innerText = value.toString();
     }
     get() {
         return this.element.value;

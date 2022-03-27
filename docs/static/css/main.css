@@ -19,9 +19,11 @@ body {
 .hero {
     text-align: center;
     font-size: 48px;
-    z-index: 10;
+    z-index: 1000;
     color: white;
     margin: 0;
+    position: absolute;
+    width: 100%;
 }
 
 .hidden {
