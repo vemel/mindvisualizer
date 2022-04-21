@@ -8,11 +8,12 @@
         "typescript": "^4.6.2"
     },
     "scripts": {
-        "start": "node ./server.js",
+        "start": "nodemon ./server.js",
         "dev": "tsc-watch",
         "format": "prettier -w src"
     },
     "devDependencies": {
-        "prettier": "^2.5.1"
+        "prettier": "^2.5.1",
+        "nodemon": "^2.0.15"
     }
 }

@@ -3,11 +3,12 @@ import Thought from './thought.js';
 import Color from './color.js';
 import Coords from './coords.js';
 import Timer from './timer.js';
+import { Context2DRenderer } from './renderers.js';
 export default class FrontCanvas extends Timer {
     constructor(options) {
         super(true);
         this.canvas = document.getElementById('front');
-        this.context = this.canvas.getContext('2d');
+        this.renderer = new Context2DRenderer(this.canvas);
         this.thoughts = [];
         this.coordsData = [];
         this.emitterCoords = new Map();
@@ -17,9 +18,10 @@ export default class FrontCanvas extends Timer {
     init() {
         this.canvas.height =
             (window.innerHeight * this.canvas.width) / window.innerWidth;
+        this.renderer.init();
     }
     createThought(position) {
-        const thought = new Thought(position, 15.0 + Math.random() * 10.0);
+        const thought = new Thought(position);
         this.thoughts.push(thought);
         this.moveThought(thought, 1.0);
         thought.start.color = thought.end.color;
@@ -74,19 +76,21 @@ export default class FrontCanvas extends Timer {
             return;
         const alpha = Math.min(4.0 * dt, 1.0);
         const thoughtAlpha = Math.min(12.0 * dt, 1.0);
-        this.context.fillStyle = new Color(0, 0, 0, alpha).toRGBA();
-        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        // this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        this.renderer.clear(new Color(0, 0, 0, alpha));
         for (const thought of this.thoughts) {
-            thought.draw(this.context, thoughtAlpha);
+            if (thought.isDead())
+                continue;
+            const color = thought.getColor();
+            const drawColor = color.alpha(color.a * thoughtAlpha);
+            this.renderer.drawCircle(thought.position, thought.getRadius(), drawColor);
         }
     }
     shouldMove(thought) {
-        if (thought.getTimer('started').value > this.getTimer('coordsUpdated').value)
-            return this.dt / 4 > Math.random();
-        if (thought.getTimer('started').value > thought.random * 1200.0)
+        const coordsUpdatedTimer = this.getTimer('coordsUpdated');
+        if (thought.getTimer('started').value - coordsUpdatedTimer.value >
+            thought.random * 60.0)
             return true;
-        if (thought.getTimer('ended').value > thought.random * 120.0)
+        if (thought.getTimer('ended').value > thought.random * 120)
             return true;
         return false;
     }

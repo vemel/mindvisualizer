@@ -9,6 +9,9 @@ export default class Color {
     toRGBA() {
         return `rgba(${this.r},${this.g},${this.b},${this.a})`;
     }
+    toArray() {
+        return [this.r, this.g, this.b, this.a];
+    }
     lerp(color, t) {
         return new Color(lerp(this.r, color.r, t), lerp(this.g, color.g, t), lerp(this.b, color.b, t), lerp(this.a, color.a, t));
     }

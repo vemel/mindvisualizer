@@ -11,7 +11,7 @@ export default class Thought extends Timer {
   random: number
   angle: number
   speed: number
-  constructor(position: Coords, speed: number) {
+  constructor(position: Coords) {
     super(true)
     this.position = position
     this.start = {
@@ -47,7 +47,7 @@ export default class Thought extends Timer {
   }
 
   getDieLerpT(): number {
-    return divideNorm(this.getTimer('died').value, 2.0)
+    return divideNorm(this.getTimer('died').value, this.random * 3.0)
   }
 
   getRadius(): number {
@@ -58,7 +58,7 @@ export default class Thought extends Timer {
   }
 
   die(): void {
-    this.getTimer('died').startTimer(this.random * 2.0)
+    this.getTimer('died').startTimer()
   }
 
   getColor(): Color {
@@ -144,5 +144,32 @@ export default class Thought extends Timer {
     // context.strokeStyle = new Color().alpha(0.0).toRGBA()
     // context.stroke()
     context.fill()
+  }
+
+  drawGL(gl: WebGL2RenderingContext, alpha: number): void {
+    if (this.isDead()) return
+
+    const radius = this.getRadius()
+    var vertices = new Float32Array([
+      -radius,
+      -radius,
+      radius,
+      -radius,
+      -radius,
+      radius,
+
+      radius,
+      -radius,
+      -radius,
+      radius,
+      radius,
+      radius,
+    ])
+
+    const vbuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
+
+    gl.drawArrays(gl.TRIANGLES, 0, vertices.length)
   }
 }

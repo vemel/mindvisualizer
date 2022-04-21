@@ -23,6 +23,7 @@ export default class UI extends Timer {
         return !this.options.params.hideUI.get();
     }
     showUI() {
+        this.fps.classList.remove('hidden');
         this.title.classList.remove('hidden');
         this.controls.classList.remove('hidden');
         Object.entries(this.inputs).forEach(([key, input]) => {

@@ -2,7 +2,7 @@ import { easeInOutQuad, lerp, divideNorm } from './utils.js';
 import Color from './color.js';
 import Timer from './timer.js';
 export default class Thought extends Timer {
-    constructor(position, speed) {
+    constructor(position) {
         super(true);
         this.position = position;
         this.start = {
@@ -33,7 +33,7 @@ export default class Thought extends Timer {
         return size * dieMod;
     }
     getDieLerpT() {
-        return divideNorm(this.getTimer('died').value, 2.0);
+        return divideNorm(this.getTimer('died').value, this.random * 3.0);
     }
     getRadius() {
         const bornMod = Math.min(this.value, 1.0);
@@ -42,7 +42,7 @@ export default class Thought extends Timer {
         return bornMod * dieMod * size;
     }
     die() {
-        this.getTimer('died').startTimer(this.random * 2.0);
+        this.getTimer('died').startTimer();
     }
     getColor() {
         const t = divideNorm(this.getElapsedSeconds(), this.getTravelSeconds());
@@ -102,5 +102,28 @@ export default class Thought extends Timer {
         // context.strokeStyle = new Color().alpha(0.0).toRGBA()
         // context.stroke()
         context.fill();
+    }
+    drawGL(gl, alpha) {
+        if (this.isDead())
+            return;
+        const radius = this.getRadius();
+        var vertices = new Float32Array([
+            -radius,
+            -radius,
+            radius,
+            -radius,
+            -radius,
+            radius,
+            radius,
+            -radius,
+            -radius,
+            radius,
+            radius,
+            radius,
+        ]);
+        const vbuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vbuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+        gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
     }
 }

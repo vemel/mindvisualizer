@@ -17,6 +17,10 @@ export default class Color {
     return `rgba(${this.r},${this.g},${this.b},${this.a})`
   }
 
+  toArray(): [number, number, number, number] {
+    return [this.r, this.g, this.b, this.a]
+  }
+
   lerp(color: Color, t: number): Color {
     return new Color(
       lerp(this.r, color.r, t),

@@ -14,6 +14,27 @@
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
     <script src="./static/js/main.js" type="module"></script>
+
+    <script id="vertex_shader" type="x-shader/x-vertex">
+        #version 300 es
+        in vec4 a_position;
+        
+        void main() {
+            gl_Position = a_position;
+        }
+    </script>
+
+    <script id="fragment_shader" type="x-shader/x-fragment">
+        #version 300 es
+
+        precision highp float;
+
+        out vec4 outColor;
+        
+        void main() {
+            outColor = vec4(1, 0, 0.5, 1);
+        }
+    </script>
 </head>
 
 <body>
@@ -22,7 +43,7 @@
         <canvas id="back" width="540" height="360"></canvas>
         <canvas id="front" width="1080" height="720"></canvas>
     </div>
-    <div id="fps">FPS</div>
+    <div id="fps" class="hidden">FPS</div>
     <div id="controls" class="hidden">
         <div>
             <input id="shuffleControl" type="checkbox" />

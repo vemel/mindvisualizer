@@ -28,5 +28,6 @@ Set `q` to one of these values for predefined texts:
 
 ```bash
 npm install
+npm run dev
 npm run start
 ```
